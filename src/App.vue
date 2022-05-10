@@ -7,29 +7,24 @@
 </template>
 
 <script>
-/* eslint-disable */
+import { mapActions, mapGetters} from 'vuex'
 export default {
   name: 'App',
+    methods: {
+        ...mapActions(["unauthorized", "checkAccess"])
+    },
+    computed: {
+        ...mapGetters(["getUser"])
+    },
   created() {
-    function checkConnection() {
-      var networkState = navigator.connection.type;
-      
-      var states = {};
-      states[Connection.UNKNOWN]  = 'Unknown connection';
-      states[Connection.ETHERNET] = 'Ethernet connection';
-      states[Connection.WIFI]     = 'WiFi connection';
-      states[Connection.CELL_2G]  = 'Cell 2G connection';
-      states[Connection.CELL_3G]  = 'Cell 3G connection';
-      states[Connection.CELL_4G]  = 'Cell 4G connection';
-      states[Connection.CELL]     = 'Cell generic connection';
-      states[Connection.NONE]     = 'No network connection';
-
-      alert('Connection type: ' + states[networkState]);
-    }
-
-    checkConnection();
+  //this.unauthorized();
     if (localStorage.getItem("user-auth")) {
-      this.$router.push({name: "main"})
+      this.checkAccess().then(() => {
+        if (this.getUser) {
+          localStorage.setItem("user", JSON.stringify(this.getUser));
+          this.$router.push({name: "user"});
+        }
+      })    
     } else {
       this.$router.push({name: "start"})
     }

@@ -45,6 +45,11 @@ const routes = [
 				component: () => import('@/pages/SportProgramPage')
 			},
 			{
+				path: '/start-sport',
+				name: 'startSport',
+				component: () => import('@/pages/StartSportProgramPage')
+			},
+			{
 				path: '/user',
 				name: 'user',
 				component: () => import('@/pages/UserPage')

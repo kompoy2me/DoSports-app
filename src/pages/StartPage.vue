@@ -2,18 +2,24 @@
 	<div>
 		
 		<v-img
-			src="@/assets/img/start.jpg"
+			src="@/assets/img/png/start.jpg"
 			height="100vh"
 			gradient="to bottom right, rgba(100,115,201,.33), rgba(25,32,72,.7)"
 		></v-img>
 		
 		<div class="px-4 main">
+			<v-img
+				src="@/assets/img/svg/logo.svg"
+				width=15% 
+				height=auto
+			></v-img>
+
 			<p
-				class="font-weight-bold white--text text-h4 mb-6"
-			>Добро пожаловать в DO SPORTS</p>
+				class=" white--text mb-6"
+			>ТВОЙ ПУТЬ К ЗДОРОВОМУ ТЕЛУ ВМЕСТЕ С DO SPORTS</p>
 			<div class="d-flex flex-column">
 				<v-btn
-					class="mb-4"
+					
 					color="primary"
 					large
 					@click="$router.push({ name: 'registration' })"
@@ -50,5 +56,9 @@ export default {
 .main {
 	position: absolute;
 	bottom: 60px;
+}
+p {
+	font-size: 28pt;
+	font-family: "Oswald-Bold", sans-serif !important;
 }
 </style>

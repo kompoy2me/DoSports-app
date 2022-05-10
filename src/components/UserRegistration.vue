@@ -1,20 +1,29 @@
 <template>
 	<div>
 		<v-form ref="form" lazy-validation>
+            <v-icon class="mb-10"
+                @click="$router.push({ name: 'start'}).catch(err => {})"
+            >
+                mdi-arrow-left
+            </v-icon>
             <p
-				class="font-weight-bold black--text text-h5 mb-6"
+				class="headline"
 			>Регистрация</p>
-			<v-text-field
+
+            <label>ФИО</label>
+			<v-text-field class="ma-40"
                 v-model="newUser.fullname"
-				label="ФИО"
-				:counter="50"
+                color="#9196FF"
                 :rules="rules.fullname"
+                hide-details="auto"
                 required
+                outlined
 			></v-text-field>
 
 			<label>Пол</label>
 			<v-radio-group
                 v-model="newUser.gender"
+                row
             >
 				<v-radio
 					label="Мужской"
@@ -25,7 +34,8 @@
 					value="f"
 				></v-radio>
 			</v-radio-group>
-
+            
+            <label>Дата рождения</label>
             <v-menu
                 ref="menu"
                 v-model="menu"
@@ -37,13 +47,16 @@
                 <template v-slot:activator="{ on, attrs }">
                     <v-text-field
                         v-model="date"
-                        label="Дата рождения"
+                        placeholder="ДД.ММ.ГГГГ"
                         :rules="rules.birthday"
-                        prepend-icon="mdi-calendar"
+                        hide-details="auto"                  
                         v-bind="attrs"
                         readonly
+                        :append-icon="'mdi-chevron-down'"
                         v-on="on"
                         required
+                        outlined
+                        color="#9196FF"
                     ></v-text-field>
                 </template>
                 <v-date-picker
@@ -56,42 +69,49 @@
                 ></v-date-picker>
             </v-menu>
 
+            <label>Регион проживания</label>
             <v-select
                 v-model="newUser.id_region"
-                label="Регион проживания"
+                hide-details="auto"
                 :items="this.getRegions"
                 :item-text="item => `${item.name} (UTC +${item.time})`"
                 :item-value="'id'"
                 required
+                outlined
+                color="#9196FF"
             ></v-select>
 
+            <label>Логин</label>
             <v-text-field
-                label="Логин"
-                :counter="20"
                 :rules="rules.login"
                 v-model="newUser.login"
                 hide-details="auto"
                 required
+                outlined
+                color="#9196FF"
 			></v-text-field>
 
+            <label>Email</label>
             <v-text-field
                 v-model="newUser.email"
-				label="Email"
-				:counter="50"
                 :rules="rules.email"
+                hide-details="auto"
                 required
+                outlined
+                color="#9196FF"
 			></v-text-field>
 
+            <label>Пароль</label>
             <v-text-field
                 v-model="newUser.password"
-				label="Пароль"
                 :append-icon="showPass ? 'mdi-eye' : 'mdi-eye-off'"
                 :type="showPass ? 'text' : 'password'"
                 @click:append="showPass = !showPass"
                 :rules="rules.password"
-				:counter="50"
                 hide-details="auto"
                 required
+                outlined
+                color="#9196FF"
 			></v-text-field>
 
             <v-checkbox
@@ -193,6 +213,7 @@ export default {
         addUser() {
             if (this.$refs.form.validate()) {
                 this.createUser(this.newUser);
+                
                 //this.regUser()
             }
         },
@@ -216,5 +237,8 @@ export default {
 </script>
 	
 <style>
-	
+label {
+    font-size: 14px;
+}
+
 </style>

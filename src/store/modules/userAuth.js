@@ -1,12 +1,14 @@
 import axios from "axios";
 import url from "../../services/url";
 
+
 export default{
     state: {
         user: null,
         msgAuth: "",
         tokenAccess: localStorage.getItem("user-token-access") || "",
         tokenRefresh: localStorage.getItem("user-token-refresh") || "",
+        connState: navigator.connection.type,
     },
     actions: {
         async authRequest(ctx, user) {
@@ -55,7 +57,15 @@ export default{
         },
         async unauthorized(ctx) {
             ctx.commit("setUnauthorized");
-        } 
+        },
+        async updateLocalUser(ctx) {
+            ctx.dispatch("checkAccess").then(() => {
+                if (ctx.getters["getUser"]) {
+                    ctx.commit("updateUserInStore")
+                }
+            })
+            
+        }
     },
     mutations: {
         authSuccess(state, token) {
@@ -73,22 +83,31 @@ export default{
         },
         updateUser(state, user) {
             state.user = user;
+            console.log("user updated", state.user)
         },
         setUnauthorized(state) {
             state.user = null;
             localStorage.removeItem("user-auth");
             localStorage.removeItem("user-token-access");
             localStorage.removeItem("user-token-refresh");
+            localStorage.removeItem("user");
             state.tokenAccess = "";
             state.tokenRefresh = "";
         },
         authError(state, message) {
             state.message = message;
+            state.user = null;
+            localStorage.removeItem("user-auth");
             localStorage.removeItem("user-token-access");
             localStorage.removeItem("user-token-refresh");
+            localStorage.removeItem("user");
             state.tokenAccess = "";
             state.tokenRefresh = "";
+        },
+        updateUserInStore(state) {
+            localStorage.setItem("user", JSON.stringify(state.user));
         }
+
     },
     getters: {
         getMessage(state) {
@@ -96,6 +115,9 @@ export default{
         },
         getUser(state) {
             return state.user;
+        },
+        getConnState(state) {
+            return state.connState;
         }
         
     }

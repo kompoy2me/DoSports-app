@@ -1,0 +1,28 @@
+#app {
+    .headline {
+        font-family: "Oswald-Medium", sans-serif !important;
+        margin-bottom: 40px;
+        font-size: 24pt !important;
+    }
+    .v-text-field--outlined fieldset {
+        color: #B5B5B8 !important;
+    }
+    .v-btn {
+        margin-top: 30px;
+        font-family: "Inter-Regular", sans-serif;
+        font-size: 18px;
+        line-height: 180%;
+        text-transform: none;
+        letter-spacing: 0px;
+        padding: 25px;
+    }
+    label {
+        font-family: "Inter-Regular", sans-serif;
+        font-size: 14px;
+        line-height: 123%;
+        position: relative;
+        bottom: 10px;
+    }
+    
+}
+

@@ -16,12 +16,14 @@
     "cordova-android": "~9.1.0",
     "cordova-ios": "^6.2.0",
     "cordova-plugin-network-information": "^3.0.0",
-    "cordova-plugin-whitelist": "^1.3.4"
+    "cordova-plugin-whitelist": "^1.3.4",
+    "cordova-sqlite-storage": "^6.0.0"
   },
   "cordova": {
     "plugins": {
       "cordova-plugin-whitelist": {},
-      "cordova-plugin-network-information": {}
+      "cordova-plugin-network-information": {},
+      "cordova-sqlite-storage": {}
     },
     "platforms": [
       "android",

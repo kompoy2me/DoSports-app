@@ -3,7 +3,6 @@
       :style="{background: $vuetify.theme.themes['dark'].background}"
       class=" overflow-hidden"
       height="100%"
-
     >
       <v-app-bar
         color="#1A1A27"
@@ -21,14 +20,17 @@
         absolute
         temporary
       >
-        <v-list-item @click="$router.push({ name: 'user'}).catch(err => {})" class="px-2">
-          <v-list-item-avatar>
-            <v-img src="https://randomuser.me/api/portraits/men/85.jpg"></v-img>
+        <v-list-item @click="$router.push({ name: 'user'}).catch(err => {})" class="pt-10 px-2">
+          <v-list-item-avatar >
+            <v-img 
+              src="@/assets/img/svg/user-violet.svg"
+              
+            ></v-img>
           </v-list-item-avatar>
-          <v-list-item-title>John Leider</v-list-item-title>
+          <v-list-item-title>{{user.fullname}}</v-list-item-title>
         </v-list-item>
 
-        <v-divider></v-divider>
+        
           
         <v-list
           nav
@@ -81,7 +83,11 @@ export default {
     data: () => ({
         drawer: false,
         group: null,
+        user: null,
   }),
+  created() {
+    this.user = JSON.parse(localStorage.getItem("user"))
+  }
 }
 </script>
 	

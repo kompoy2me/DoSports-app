@@ -1,20 +1,31 @@
 <template>
     <div>
+        <div>
+            <v-icon class="mb-10"
+                @click="$router.push({ name: 'start'}).catch(err => {})"
+            >
+                mdi-arrow-left
+            </v-icon>
+        </div>
         <p
-            class="font-weight-bold black--text text-h5 mb-6"
+            class="headline"
         >Авторизация</p>
+
         <v-form ref="form">
-            <v-text-field
+
+            <label>Email или логин</label>
+            <v-text-field class="uu"
                 v-model="user.login"
-                label="Email или логин"
                 :rules="rules.login"
                 hide-details="auto"
                 required
                 outlined
+                color="#9196FF"
             ></v-text-field>
+
+            <label>Пароль</label>
             <v-text-field
                 v-model="user.password"
-				label="Пароль"
                 :append-icon="showPass ? 'mdi-eye' : 'mdi-eye-off'"
                 :type="showPass ? 'text' : 'password'"
                 @click:append="showPass = !showPass"
@@ -22,6 +33,7 @@
                 hide-details="auto"
                 required
                 outlined
+                color="#9196FF"
 			></v-text-field>
             <v-btn
                 color="primary"
@@ -56,17 +68,31 @@ export default {
 
     }),
     computed: {
-        ...mapGetters(["getMessage, getUser"])
+        ...mapGetters(["getMessage", "getUser"])
     },
     methods: {
         ...mapActions(["authRequest", "checkAccess"]),
-        authUser() {
+
+        async authUser() {
             if (this.$refs.form.validate()) {
-                this.authRequest(this.user).then(() => {
+                this.authRequest(this.user).then( () => { 
+                    
                     if (localStorage.getItem("user-auth")) {
-                        this.$router.push({name: "user"})
+                        this.checkAccess().then(() => {
+                            if (this.getUser) {
+                                localStorage.setItem("user", JSON.stringify(this.getUser));
+                                this.$router.push({name: "user"});
+                            }
+                            else {
+                                alert(this.getMessage);
+                            }
+                        })
+                        
                     } else {
-                        alert(this.getMessage);
+                        if (this.getMessage) {
+                            this.user.password = "";
+                            alert("Проверьте правильность логина или пароля");
+                        }
                     }
                 })
                 
@@ -75,7 +101,10 @@ export default {
     }  
 }
 </script>
-	
-<style>
-	
+
+<style lang="scss">
+@import "../assets/main.css";
+@import "../assets/forms.scss";
+
+
 </style>

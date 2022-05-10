@@ -1,6 +1,6 @@
 <template>
 	<div>
-        <div>{{ `welcome, ${this.getUser.login}` }}</div>
+        <div>{{ `welcome, ${user.login}` }}</div>
         <v-btn
             @click="logOut"
             color="primary"
@@ -13,21 +13,21 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions} from 'vuex'
 export default {
+    data: () => ({
+        user: JSON.parse(localStorage.getItem("user"))
+    }),
     methods: {
-        ...mapActions(["unauthorized", "checkAccess"]),
+        ...mapActions(["unauthorized"]),
         logOut() {
             this.unauthorized().then(() => {
                 this.$router.push({name: "start"})
             })
-        },
-    },
-    computed: {
-        ...mapGetters(["getUser"])
+        }
     },
     created() {
-        this.checkAccess();
+        this.user = JSON.parse(localStorage.getItem("user"))
     }
 }
 </script>

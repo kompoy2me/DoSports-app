@@ -45,9 +45,9 @@ const routes = [
 				component: () => import('@/pages/SportProgramPage')
 			},
 			{
-				path: '/start-sport',
-				name: 'startSport',
-				component: () => import('@/pages/StartSportProgramPage')
+				path: '/start-prog',
+				name: 'start-prog',
+				component: () => import('@/pages/StartProgramPage')
 			},
 			{
 				path: '/user',

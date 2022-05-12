@@ -2,20 +2,21 @@
 	<div>
 		
 		<v-img
-			src="@/assets/img/png/start.jpg"
+			src="@/assets/img/png/start-img.png"
 			height="100vh"
-			gradient="to bottom right, rgba(100,115,201,.33), rgba(25,32,72,.7)"
+			gradient="to bottom, rgba(0, 75, 215, .1), rgba(0, 13, 130, 0.3)"
 		></v-img>
 		
 		<div class="px-4 main">
-			<v-img
+			<!--<v-img
 				src="@/assets/img/svg/logo.svg"
 				width=15% 
 				height=auto
-			></v-img>
+				
+			></v-img>-->
 
 			<p
-				class=" white--text mb-6"
+				class=" white--text"
 			>ТВОЙ ПУТЬ К ЗДОРОВОМУ ТЕЛУ ВМЕСТЕ С DO SPORTS</p>
 			<div class="d-flex flex-column">
 				<v-btn
@@ -51,14 +52,19 @@ export default {
 }
 </script>
 	
-<style>
+<style lang="scss">
+@import "../assets/main.css";
+@import "../assets/forms.scss";
 
 .main {
 	position: absolute;
 	bottom: 60px;
 }
 p {
-	font-size: 28pt;
+	font-size: 24pt;
 	font-family: "Oswald-Bold", sans-serif !important;
+}
+.v-btn{
+	margin-top: 10px !important;
 }
 </style>

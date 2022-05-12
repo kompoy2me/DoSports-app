@@ -17,9 +17,10 @@ export default {
 	mounted() {
         this.checkActiveProgram(this.user.id).then(() =>{
             if (!this.activeProgramStatus) {
-				this.$router.push({ name: 'startSport'})
+				this.$router.push({ name: 'start-prog'})
             } else {
-				alert("!");
+                this.$router.push({ name: 'start-prog'})
+				
                 //
             }
         })

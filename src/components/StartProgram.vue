@@ -147,22 +147,14 @@ export default {
                 this.program.height = parseInt(this.program.height)
                 this.program.weight = parseInt(this.program.weight)
                 this.createProgram(this.program).then(() => {
-                    console.log(this.user.id);
-                    console.log(
-                    this.program.idUser,
-                    this.program.bmi, 
-                    this.program.weightCategory,
-                    this.program.lifestyle,
-                    this.program.trainPrepare,
-                    this.program.aim, 
-                    this.program.norm);
-                    /*
                     if (this.createProgramStatus === "Success") {
+                        console.log(JSON.stringify(this.program))
+                        localStorage.setItem("program", JSON.stringify(this.program));
                         alert("Успешно");
                     }
                     else {
                         alert(this.createProgramStatus)
-                    }*/
+                    }
                 })
             }
         },

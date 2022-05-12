@@ -10,21 +10,46 @@
 import { mapActions, mapGetters} from 'vuex'
 export default {
   name: 'App',
-    methods: {
-        ...mapActions(["unauthorized", "checkAccess"])
-    },
-    computed: {
-        ...mapGetters(["getUser"])
-    },
-  created() {
-  //this.unauthorized();
-    if (localStorage.getItem("user-auth")) {
+  computed: {
+    ...mapGetters(["getUser", "getConnState", "programData", "getMessage","activeProgramStatus"])
+  },
+  methods: {
+    ...mapActions(["unauthorized", "checkAccess", "showProgram", "checkActiveProgram"]),
+
+    updateLocalUser() {
       this.checkAccess().then(() => {
         if (this.getUser) {
           localStorage.setItem("user", JSON.stringify(this.getUser));
-          this.$router.push({name: "user"});
+          this.updateUserProgram();
+          //this.$router.push({name: "main"});
+        } else {
+          alert(this.getMessage);
+          this.$router.push({name: "start"})
         }
-      })    
+      }) 
+    },
+
+    updateUserProgram() {
+      this.checkActiveProgram(this.getUser.id).then(() =>{
+        if (!this.activeProgramStatus) {
+              this.$router.push({ name: 'start-prog'});
+        } else {
+              //скачать программу пользователя
+              this.showProgram(this.getUser).then(() => {
+                  localStorage.setItem("program", JSON.stringify(this.programData));
+              })
+              //this.$router.push({name: "main"});
+          }
+      })
+    }
+    },
+
+  created() {
+    if (localStorage.getItem("user-auth")) {
+      if (this.getConnState != "none") {
+        this.updateLocalUser();
+      }
+      this.$router.push({name: "main"}); 
     } else {
       this.$router.push({name: "start"})
     }

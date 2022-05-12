@@ -1,37 +1,15 @@
 <template>
-	<div>
-        <div>{{ `welcome, ${user.login}` }}</div>
-        <v-btn
-            @click="logOut"
-            color="primary"
-            large
-            block
-            class="mt-4"
-            >Выйти
-            </v-btn>
+	<div class="pa-4">
+        <profile></profile>
     </div>
 </template>
 
 <script>
-import { mapActions} from 'vuex'
+import Profile from "../components/Profile.vue"
 export default {
-    data: () => ({
-        user: JSON.parse(localStorage.getItem("user"))
-    }),
-    methods: {
-        ...mapActions(["unauthorized"]),
-        logOut() {
-            this.unauthorized().then(() => {
-                this.$router.push({name: "start"})
-            })
-        }
-    },
-    created() {
-        this.user = JSON.parse(localStorage.getItem("user"))
-    }
+	components: { Profile }
 }
 </script>
 
 <style>
-	
 </style>

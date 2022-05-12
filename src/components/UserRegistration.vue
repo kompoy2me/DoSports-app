@@ -236,7 +236,10 @@ export default {
 }
 </script>
 	
-<style>
+<style lang="scss">
+@import "../assets/main.css";
+@import "../assets/forms.scss";
+
 label {
     font-size: 14px;
 }

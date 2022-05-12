@@ -91,6 +91,7 @@ export default{
             localStorage.removeItem("user-token-access");
             localStorage.removeItem("user-token-refresh");
             localStorage.removeItem("user");
+            localStorage.removeItem("program");
             state.tokenAccess = "";
             state.tokenRefresh = "";
         },
@@ -101,6 +102,7 @@ export default{
             localStorage.removeItem("user-token-access");
             localStorage.removeItem("user-token-refresh");
             localStorage.removeItem("user");
+            localStorage.removeItem("program");
             state.tokenAccess = "";
             state.tokenRefresh = "";
         },

@@ -15,6 +15,11 @@ const routes = [
 		component: () => import('@/pages/RegistrationPage')
 	},
 	{
+		path: '/registration-vk/:token',
+		name: 'registrationVK',
+		component: () => import('@/pages/RegistrationPageVK')
+	},
+	{
 		path: '/authorization',
 		name: 'authorization',
 		component: () => import('@/pages/AuthorizationPage')

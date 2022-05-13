@@ -21,7 +21,6 @@ export default {
         if (this.getUser) {
           localStorage.setItem("user", JSON.stringify(this.getUser));
           this.updateUserProgram();
-          //this.$router.push({name: "main"});
         } else {
           alert(this.getMessage);
           this.$router.push({name: "start"})
@@ -38,13 +37,14 @@ export default {
               this.showProgram(this.getUser).then(() => {
                   localStorage.setItem("program", JSON.stringify(this.programData));
               })
-              //this.$router.push({name: "main"});
           }
       })
-    }
     },
+  },
 
   created() {
+    
+    
     if (localStorage.getItem("user-auth")) {
       if (this.getConnState != "none") {
         this.updateLocalUser();

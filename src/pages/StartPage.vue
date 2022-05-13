@@ -32,12 +32,12 @@
 					@click="$router.push({ name: 'authorization'})"
 				>Войти
 				</v-btn>
-				<!--<v-btn
+				<v-btn
 					color="primary"
 					large
-					@click="$router.push({ name: 'main'})"
-				>Гость
-				</v-btn>-->
+					@click="$router.push({ name: 'registrationVK'})"
+				>Войти через VK
+				</v-btn>
 			</div>
 		</div>
 
@@ -48,7 +48,21 @@
 
 <script>
 export default {
+	methods: {
+		
 
+		/* 
+		openBrowser() {
+			var ref = cordova.InAppBrowser.open('https://dosports.ru/api/vk-auth', '_blank', 'location=no');
+			//var ref = cordova.InAppBrowser.open('https://google.ru', '_blank', 'location=no');
+			var myCallback = function(event) { alert(event.url); };
+			ref.addEventListener('loadstart', myCallback);
+			ref.removeEventListener('loadstart', myCallback);
+		}
+		*/
+		
+		
+	}
 }
 </script>
 	

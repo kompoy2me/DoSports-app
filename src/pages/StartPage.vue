@@ -8,13 +8,12 @@
 		></v-img>
 		
 		<div class="px-4 main">
-			<!--<v-img
+			<v-img
 				src="@/assets/img/svg/logo.svg"
 				width=15% 
 				height=auto
 				
-			></v-img>-->
-
+			></v-img>
 			<p
 				class=" white--text"
 			>ТВОЙ ПУТЬ К ЗДОРОВОМУ ТЕЛУ ВМЕСТЕ С DO SPORTS</p>
@@ -35,7 +34,7 @@
 				<v-btn
 					color="primary"
 					large
-					@click="$router.push({ name: 'registrationVK'})"
+					@click="openBrowser"
 				>Войти через VK
 				</v-btn>
 			</div>
@@ -47,23 +46,99 @@
 </template>
 
 <script>
+import {mapActions, mapGetters} from "vuex";
 export default {
-	methods: {
-		
-
-		/* 
-		openBrowser() {
-			var ref = cordova.InAppBrowser.open('https://dosports.ru/api/vk-auth', '_blank', 'location=no');
-			//var ref = cordova.InAppBrowser.open('https://google.ru', '_blank', 'location=no');
-			var myCallback = function(event) { alert(event.url); };
-			ref.addEventListener('loadstart', myCallback);
-			ref.removeEventListener('loadstart', myCallback);
+	data: () => ({
+			ref: null,
+			token: "",
+	}),
+	
+	watch: {
+		token () {
+			console.log('CHANGED', this.token)
 		}
-		*/
+	},
+    methods: {
+		...mapActions(["checkUserVk", "checkUserVkInDb","checkActiveProgram","authRequest", "checkAccess", "showProgram"]),
+
+		loadstartCallback(event) {
+            console.log('Loading started: '  + event.url);
+            if (event.url.includes('registration-vk')) {
+                let urlSplitted = event.url.split('/');
+                this.token = urlSplitted[urlSplitted.length-1];
+                this.ref.close();
+				this.authUser();
+            }
+        },
+		authUser() {
+			this.checkUserVk(this.token).then(() => {
+				if (this.getUserVkData) {
+					console.log('USER VK ID ', this.getUserVkData.id);
+					this.checkUserVkInDb(this.getUserVkData.id).then(() => {
+						console.log('MATCH VK ', this.getMatchVK);
+						if (this.getMatchVK === null) {
+							alert('Ошибка авторизации')
+						}
+						else {
+							if (this.getMatchVK) {
+								this.checktUserData();
+							}
+							else {
+								this.$router.push({ name: 'registrationVK' });
+							}
+						}
+					})
+				}
+			})
+		},
+		checktUserData(){
+            this.checkAccess().then(() => {
+                if (this.getUser) {
+                    localStorage.setItem("user", JSON.stringify(this.getUser));
+                    this.checkUserProgram();
+                }
+                else {
+                    alert(this.getMessage);
+                }
+            })
+        },
+        checkUserProgram() {
+            this.checkActiveProgram(this.getUser.id).then(() =>{
+                console.log(this.getUser.id, this.activeProgramStatus);
+                if (!this.activeProgramStatus) {
+                    this.$router.push({ name: 'start-prog'})
+                }
+                else {
+                    //скачать программу пользователя
+                    this.showProgram(this.getUser).then(() => {
+                        localStorage.setItem("program", JSON.stringify(this.programData));
+                    })
+                    this.$router.push({name: "main"});
+                }
+            })
+        },
+        /*eslint-disable*/
+        openBrowser() {
+			this.ref = cordova.InAppBrowser.open('https://dosports.ru/api/vk-auth', '_blank', 'location=no');
+            this.ref.addEventListener('loadstart', (event)=>{
+                this.loadstartCallback(event)
+            });
+			this.ref.addEventListener('loadstop', loadstopCallback);
+			this.ref.addEventListener('loaderror', loaderrorCallback);
+			function loadstopCallback(event) {
+				console.log('Loading finished: ' + event.url)
+			}
+			function loaderrorCallback(error) {
+				console.log('Loading error: ' + error.message);
+			}
+		}
+	},
+	computed: {
+        ...mapGetters(["getUserVkData", "getMatchVK","activeProgramStatus","getMessage", "getUser", "programData"]),
+    },
 		
-		
-	}
 }
+
 </script>
 	
 <style lang="scss">

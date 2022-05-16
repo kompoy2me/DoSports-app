@@ -43,13 +43,17 @@ export default {
   },
 
   created() {
-    
-    
     if (localStorage.getItem("user-auth")) {
       if (this.getConnState != "none") {
         this.updateLocalUser();
       }
-      this.$router.push({name: "main"}); 
+      if (!localStorage.getItem("program")) {
+        this.$router.push({name: "start-prog"}); 
+      }
+      else {
+        this.$router.push({name: "main"}); 
+      }
+      
     } else {
       this.$router.push({name: "start"})
     }

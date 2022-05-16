@@ -42,7 +42,7 @@
 
             <label>Регион проживания</label>
             <v-select
-                v-model="newUser.id_region"
+                v-model="newUserVK.id_region"
                 hide-details="auto"
                 :items="this.getRegions"
                 :item-text="item => `${item.name} (UTC +${item.time})`"
@@ -55,7 +55,7 @@
             <label>Логин</label>
             <v-text-field
                 :rules="rules.login"
-                v-model="newUser.login"
+                v-model="newUserVK.login"
                 hide-details="auto"
                 required
                 outlined
@@ -64,14 +64,26 @@
 
             <label>Email</label>
             <v-text-field
-                v-model="newUser.email"
+                v-model="newUserVK.email"
                 :rules="rules.email"
                 hide-details="auto"
                 required
                 outlined
                 color="#9196FF"
 			></v-text-field>
-
+            <!--
+            <label>Пароль(не обязательно)</label>
+            <v-text-field
+                v-model="newUserVK.password"
+                :append-icon="showPass ? 'mdi-eye' : 'mdi-eye-off'"
+                :type="showPass ? 'text' : 'password'"
+                @click:append="showPass = !showPass"
+                :rules="rules.password"
+                hide-details="auto"
+                outlined
+                color="#9196FF"
+			></v-text-field>
+            -->
             <v-checkbox
                     label="Нажимая кнопку “Зарегистрироваться”, вы даете согласие на обработку персональных данных"
                     :rules="rules.checkbox"
@@ -79,19 +91,12 @@
             ></v-checkbox>
                 
             <v-btn
+                @click="addUser"
                 color="primary"
                 large
                 block
                 class="mt-4"
             >Зарегистрироваться
-            </v-btn>
-            <v-btn
-                @click="getVK"
-                color="primary"
-                large
-                block
-                class="mt-4"
-            >токены
             </v-btn>
 		</v-form>
 		
@@ -102,9 +107,7 @@
 import {mapActions, mapGetters} from "vuex";
 export default {
 	data: () => ({
-        ref: null,
-        token: "",
-        newUser: {
+        newUserVK: {
             fullname: "",
             gender: "m",
             birthday: null,
@@ -112,16 +115,11 @@ export default {
             id_vk: 0,
             email: "",
             login: "",
+            password: ""
         },
         dateFormatted: "",
         showPass: false,
         rules: {
-            fullname: [
-                v => !!v ||"Введите ФИО",
-                v => /^[а-яА-Я ]+$/.test(v) || "Некорректный ФИО",
-                v => v.trim().split(" ").length >= 2 || "Поле должно состоять как минимум из фамилии и имени",
-                v => v.length <= 50 || "ФИО должно состоять не более чем из 50 символов"
-            ],
             birthday: [ 
                 v => !!v || "Введите дату рождения",
             ],
@@ -150,14 +148,11 @@ export default {
       }
     },
     computed: {
-        ...mapGetters(["getRegions", "getLogins", "getEmails"]),
+        ...mapGetters(["getRegions", "getLogins", "getEmails", "getUserVkData", "getUser", "updateMessageReg"]),
         
     },
     methods: {
-        ...mapActions(["getRegionList", "getLoginList", "getEmailList","createUser"]),
-        getVK() {
-            console.log("THIS IS TOKEN ", this.token);            
-        },
+        ...mapActions(["getRegionList", "getLoginList", "getEmailList","createUserVk", "checkAccess"]),
         parseDate(date) {
             if (!date) return null;
             const [year, month, day] = date.split('-');
@@ -165,7 +160,7 @@ export default {
         },
         save (date) {
             this.$refs.menu.save(date);
-            this.newUser.birthday = date;
+            this.newUserVK.birthday = date;
         },
         updateRules() {
             this.rules.birthday = [
@@ -185,50 +180,44 @@ export default {
                 v => !this.getLogins.find(obj => obj.login === v) || 'Данный логин уже существует'
             ];
         },
+        
         addUser() {
             if (this.$refs.form.validate()) {
-                this.createUser(this.newUser);
+                this.createUserVk(this.newUserVK).then(() => {
+                    if (localStorage.getItem("user-auth")) {
+                        this.checkAccess().then(()=>{
+                            localStorage.setItem("user", JSON.stringify(this.getUser));
+                            this.$router.push({ name: 'start-prog'});
+                        })
+                    }
+                    else {
+                        alert(this.getMessageReg)
+                    }
+                })
             }
         },
-        regUser() {
-            console.log(this.newUser.fullname,
-            this.newUser.gender,
-            this.newUser.birthday,
-            this.newUser.id_region,
-            this.newUser.email,
-            this.newUser.login,
-            this.newUser.password)
-        },
-        loadstartCallback(event) {
-            console.log('Loading started: '  + event.url);
-            if (event.url.includes('registration-vk')) {
-                let urlSplitted = event.url.split('/');
-                this.token = urlSplitted[urlSplitted.length-1];
-                this.ref.close()
-            }
-        },
-        /*eslint-disable*/
-        openBrowser() {
-    		this.ref = cordova.InAppBrowser.open('https://dosports.ru/api/vk-auth', '_blank', 'location=no');
-            this.ref.addEventListener('loadstart', (event)=>{
-                this.loadstartCallback(event)
-            });
-			this.ref.addEventListener('loadstop', loadstopCallback);
-			this.ref.addEventListener('loaderror', loaderrorCallback);
-			function loadstopCallback(event) {
-				console.log('Loading finished: ' + event.url)
-			}
-			function loaderrorCallback(error) {
-				console.log('Loading error: ' + error.message);
-			}
-		}
+
+        setVkData() {
+            this.newUserVK.login = this.getUserVkData.username;
+            this.newUserVK.fullname = this.getUserVkData.displayName;
+            this.newUserVK.gender = this.getUserVkData.gender
+            this.newUserVK.id_vk = this.getUserVkData.id;
+        }
+        
+
     },
     mounted() {
         this.getRegionList();
         this.getLoginList();
         this.getEmailList();
         this.updateRules();
-        this.openBrowser() 
+    },
+    created() {
+        
+        this.setVkData();
+        console.log('newUserVK ', JSON.stringify(this.getUserVkData));
+        console.log(localStorage.getItem('user-auth'), localStorage.getItem('user'));
+        
     }
 }
 </script>

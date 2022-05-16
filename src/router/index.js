@@ -25,6 +25,11 @@ const routes = [
 		component: () => import('@/pages/AuthorizationPage')
 	},
 	{
+		path: '/start-offline',
+		name: 'start-offline',
+		component: () => import('@/pages/StartProgramOffline')
+	},
+	{
 		path: '/app',
 		name: 'menuLayout',
 		component: () => import('@/pages/MenuLayout'),

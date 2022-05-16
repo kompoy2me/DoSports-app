@@ -77,37 +77,43 @@ export default {
             if (this.$refs.form.validate()) {
                 this.authRequest(this.user).then( () => { 
                     if (localStorage.getItem("user-auth")) {
-                        this.checkAccess().then(() => {
-                            if (this.getUser) {
-                                localStorage.setItem("user", JSON.stringify(this.getUser));
-                                this.checkActiveProgram(this.getUser.id).then(() =>{
-                                    console.log(this.getUser.id, this.activeProgramStatus);
-                                    if (!this.activeProgramStatus) {
-                                        this.$router.push({ name: 'start-prog'})
-                                    }
-                                    else {
-                                        //скачать программу пользователя
-                                        this.showProgram(this.getUser).then(() => {
-                                            localStorage.setItem("program", JSON.stringify(this.programData));
-                                        })
-                                        this.$router.push({name: "main"});
-                                    }
-                                })
-                            }
-                            else {
-                                alert(this.getMessage);
-                            }
-                        })
-                        
+                        this.checkUserData();
                     } else {
                         if (this.getMessage) {
                             this.user.password = "";
                             alert("Проверьте правильность логина или пароля");
+                            
                         }
                     }
                 })
                 
             }
+        },
+        checkUserData(){
+            this.checkAccess().then(() => {
+                if (this.getUser) {
+                    localStorage.setItem("user", JSON.stringify(this.getUser));
+                    this.checkUserProgram();
+                }
+                else {
+                    alert(this.getMessage);
+                }
+            })
+        },
+        checkUserProgram() {
+            this.checkActiveProgram(this.getUser.id).then(() =>{
+                console.log(this.getUser.id, this.activeProgramStatus);
+                if (!this.activeProgramStatus) {
+                    this.$router.push({ name: 'start-prog'})
+                }
+                else {
+                    //скачать программу пользователя
+                    this.showProgram(this.getUser).then(() => {
+                        localStorage.setItem("program", JSON.stringify(this.programData));
+                    })
+                    this.$router.push({name: "main"});
+                }
+            })
         }
     }  
 }

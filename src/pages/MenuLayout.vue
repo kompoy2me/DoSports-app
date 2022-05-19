@@ -49,6 +49,14 @@
                 <v-list-item-title>Главная</v-list-item-title>
             </v-list-item>
             <v-list-item
+                @click="$router.push({ name: 'sport'}).catch(err => {})"
+            >
+                <v-list-item-icon>
+                    <v-icon>mdi-home</v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>Основная информация</v-list-item-title>
+            </v-list-item>
+            <v-list-item
                 @click="$router.push({ name: 'diary'}).catch(err => {})"
             >
                 <v-list-item-icon>
@@ -64,14 +72,7 @@
                 </v-list-item-icon>
                 <v-list-item-title>Атлас тела</v-list-item-title>
             </v-list-item>
-            <v-list-item
-                @click="$router.push({ name: 'sport'}).catch(err => {})"
-            >
-                <v-list-item-icon>
-                    <v-icon>mdi-home</v-icon>
-                </v-list-item-icon>
-                <v-list-item-title>Спортивная программа</v-list-item-title>
-            </v-list-item>
+            
           </v-list-item-group>
         </v-list>
       </v-navigation-drawer>

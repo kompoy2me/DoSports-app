@@ -5,7 +5,7 @@ import url from "../../services/url";
 export default{
     state: {
         user: null,
-        msgAuth: "",
+        msgAuth: "ok",
         tokenAccess: localStorage.getItem("user-token-access") || "",
         tokenRefresh: localStorage.getItem("user-token-refresh") || "",
         connState: navigator.connection.type,
@@ -16,8 +16,10 @@ export default{
                 if (!resp.data.message) {
                     ctx.commit("authSuccess", resp.data.token);
                 }
+                console.log('auth Success');
                 ctx.commit("updateMessage", resp.data.message);
             }).catch((err) => {
+                console.log('auth Error');
                 ctx.commit("updateMessage", err.data);
             });
         },

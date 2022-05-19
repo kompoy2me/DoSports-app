@@ -11,7 +11,7 @@ import { mapActions, mapGetters} from 'vuex'
 export default {
   name: 'App',
   computed: {
-    ...mapGetters(["getUser", "getConnState", "programData", "getMessage","activeProgramStatus"])
+    ...mapGetters(["getUser", "programData", "getMessage","activeProgramStatus"])
   },
   methods: {
     ...mapActions(["unauthorized", "checkAccess", "showProgram", "checkActiveProgram"]),
@@ -22,7 +22,7 @@ export default {
           localStorage.setItem("user", JSON.stringify(this.getUser));
           this.updateUserProgram();
         } else {
-          alert(this.getMessage);
+          alert("Ошибка авторизации", this.getMessage);
           this.$router.push({name: "start"})
         }
       }) 
@@ -44,7 +44,7 @@ export default {
 
   created() {
     if (localStorage.getItem("user-auth")) {
-      if (this.getConnState != "none") {
+      if (navigator.connection.type != "none") {
         this.updateLocalUser();
       }
       if (!localStorage.getItem("program")) {

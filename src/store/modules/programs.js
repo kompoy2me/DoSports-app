@@ -7,7 +7,8 @@ export default {
         weightCategories: [],
         statusCreateProgram: "",
         statusActiveProgram: "",
-        program: {}
+        program: {},
+        foods: [],
     },
 
     actions: {
@@ -47,6 +48,11 @@ export default {
                     ctx.commit("updateProgramData", res.data.program);
                 }
             });
+        },
+        async showFoods(ctx) {
+            await axios.get(`${url}/api/programs/get-foods`).then((res) => {
+                ctx.commit(`updateFoods`, res.data);
+            });
         }
     },
 
@@ -69,6 +75,9 @@ export default {
 
         updateProgramData(state, program) {
             state.program = program;
+        },
+        updateFoods(state, foods) {
+            state.foods = foods;
         }
     },
 
@@ -91,6 +100,9 @@ export default {
 
         programData(state) {
             return state.program;
+        },
+        getFoods(state) {
+            return state.foods;
         }
     }
 }

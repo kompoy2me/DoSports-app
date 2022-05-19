@@ -1,10 +1,12 @@
 <template>
 	<div>
-        <v-icon class="mb-10"
-                @click="$router.push({ name: ''}).catch(err => {})"
-        >mdi-arrow-left</v-icon>
-        <v-form ref="form">
-        <div class="row">
+        <div class="headline"
+        >Начните свою программу <p style="color: #9196FF">прямо сейчас >>></p></div>
+        <div class="mb-14">
+            Прежде чем начать, необходимо рассчитать индекс массы тела, дневную норму потребления питательных веществ и калорий.
+        </div>
+        <v-form ref="form" lazy-validation>
+        <div class="row mb-3">
             
             <div>
                 <label>Рост(см)</label>
@@ -31,12 +33,13 @@
             </div>
         </div>
         
-        <div class="border">
+        <div class="border mb-8">
             {{ message }}
         </div>
         
         <label>Образ жизни</label>
         <v-select
+            class="mb-4"
             :menu-props="{ bottom: true, offsetY: true }"
             :append-icon="'mdi-chevron-down'"
             :items="this.lifestyleList"
@@ -48,46 +51,58 @@
 
         <label>Уровень подготовленности к тренировкам</label>
         <v-radio-group
+            class="mt-2 mb-2 pa-0"
+            
             v-model="program.trainPrepare"
-            class="train-prepare-group"
             >
-            <v-radio
-                value="0"
-                label="Новичок (Вы - начинающий. Вы не знаете, какое количество тренировок в неделю вам необходимо. Система посчитает это за вас)"
-            ></v-radio>
-            <v-radio
-                value="1"
-                label="Профессионал (Вы знаете, сколько тренировок вам необходимо в неделю. Система предоставит возможность создавать любое их количество)"
-            ></v-radio>
+            <div class="flex-start mb-3">
+                <v-radio
+                    value="0"
+                ></v-radio>
+                <label >Новичок (Вы - начинающий. Вы не знаете, какое количество тренировок в неделю вам необходимо. Система посчитает это за вас)</label>
+            </div>
+            <div class="flex-start">
+                <v-radio
+                    value="1"
+                ></v-radio>
+                <label >Профессионал (Вы знаете, сколько тренировок вам необходимо в неделю. Система предоставит возможность создавать любое их количество)</label>
+            </div>
         </v-radio-group>
         <div >
-            <label>Цель программы</label>
+            <label >Цель программы</label>
             <v-radio-group
+            class="ma-0 pa-0 "
                 v-model="program.aim"
-            >
-                <v-radio
-                    class="support"
-                    value="0"
-                    label="Поддержание веса"
-                    dark
-                ></v-radio>
-                <v-radio
-                    class="down"
-                    value="1"
-                    label="Сброс веса"
-                    dark
-                ></v-radio>
-                <v-radio
-                    class="up"
-                    value="2"
-                    label="Набор веса"
-                    dark
-                ></v-radio>
+            >   
+                <div class="flex-bottom">
+                    <v-radio
+                        value="0"    
+                        dark
+                    ></v-radio>
+                <label >Поддержание веса</label>
+                </div>
+                
+                <div class="flex-bottom">
+                    <v-radio
+                        value="1"    
+                        dark
+                    ></v-radio>
+                <label >Сброс веса</label>
+                </div>
+                <div class="flex-bottom">
+                    <v-radio
+                        value="2"    
+                        dark
+                    ></v-radio>
+                <label >Набор веса</label>
+                </div>
             </v-radio-group>
         </div>
         <v-btn
             @click="this.calculateProgram"
             color="primary"
+            width="100%"
+            class="mb-6"
         >Начать программу
         </v-btn>
         </v-form>
@@ -151,6 +166,7 @@ export default {
                         console.log(JSON.stringify(this.program))
                         localStorage.setItem("program", JSON.stringify(this.program));
                         alert("Успешно");
+                        this.$router.push({ name: 'sport'});
                     }
                     else {
                         alert(this.createProgramStatus)
@@ -184,7 +200,7 @@ export default {
         },
         ageUser() {
             let today = new Date();
-            let birthday = this.user.birthday;
+            let birthday = new Date(this.user.birthday);
             let age = today.getFullYear() - new Date(birthday).getFullYear();
             let months = today.getMonth() - new Date(birthday).getMonth();
             if (months < 0 || (months === 0 && today.getDate() < birthday.getDate())) {
@@ -244,5 +260,18 @@ export default {
     padding: 4%;
     border-left: solid #9196FF;
 }
+.headline {
+    margin-bottom: 10px !important;
+}
 
+.flex-bottom {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+}
+.flex-start {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+}
 </style>

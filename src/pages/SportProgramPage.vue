@@ -1,33 +1,51 @@
 <template>
-	<div>SPORT PROGRAM</div>
+	<div >
+        <div v-if="userProg.is_active">
+            <weeks-viewer></weeks-viewer>
+            <product-list></product-list>
+            <!--<program-base class="mx-4"></program-base>-->
+        </div>
+        
+    </div>
 </template>
 
 <script>
+/*eslint-disable*/
+import ProgramBase from '../components/ProgramBase.vue';
+import WeeksViewer from '../components/WeeksViewer.vue';
+import ProductList from '../components/ProductList.vue';
 import {mapActions, mapGetters} from "vuex";
+
 export default {
+    components: { ProgramBase, WeeksViewer, ProductList},
 	data: () => ({
-        user: null
+        user: null,
+        userProg: null,
+        foods: []
     }),
 	methods: {
-        ...mapActions(["checkActiveProgram"])
+        ...mapActions(["checkActiveProgram", "showFoods"]),
     },
 	computed: {
-        ...mapGetters(["activeProgramStatus"]),
+        ...mapGetters(["activeProgramStatus", "getFoods"]),
     },
 	mounted() {
-        this.checkActiveProgram(this.user.id).then(() =>{
-            if (!this.activeProgramStatus) {
-				this.$router.push({ name: 'start-prog'})
-            } else {
-                this.$router.push({ name: 'start-prog'})
-				
-                //
-            }
-        })
+        
+        //проверка программы в LS
+        //проверка сети + обновление LS
+        if (!navigator.connection.type === "none") {
+            this.checkActiveProgram(this.user.id).then(() =>{
+                if (!this.activeProgramStatus) {
+                    this.$router.push({ name: 'start-prog'})
+                } 
+            })
+        } 
         
         
+    
     },
 	created() {
+        this.userProg = JSON.parse(localStorage.getItem("program"))
         this.user = JSON.parse(localStorage.getItem("user"))
     }
 }

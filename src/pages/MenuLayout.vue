@@ -4,15 +4,20 @@
       class=" overflow-hidden"
       height="100%"
     >
+    <div style="height:100vh; overflow: auto; ">
       <v-app-bar
+        style="height:8%"
         color="#1A1A27"
         dark
       >
         <v-app-bar-nav-icon @click="drawer = true"></v-app-bar-nav-icon>
         <v-toolbar-title>Title</v-toolbar-title>
       </v-app-bar>
+      <div style="height:92%; overflow:auto;"><router-view ></router-view></div>
+      
+    </div>
 
-      <router-view/>
+
 
       <v-navigation-drawer
         v-model="drawer"
@@ -24,7 +29,6 @@
           <v-list-item-avatar >
             <v-img 
               src="@/assets/img/svg/user-violet.svg"
-              
             ></v-img>
           </v-list-item-avatar>
           <v-list-item-title>{{user.fullname}}</v-list-item-title>

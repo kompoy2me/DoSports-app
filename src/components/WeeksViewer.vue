@@ -2,9 +2,7 @@
   <div>
     <template>
         <v-sheet
-            class="mx-auto"
-            elevation="8"
-            max-width="800"
+            max-width="100%"
             style="background-color: #1A1A27"
         >
         <v-slide-group

@@ -2,7 +2,7 @@
     <div>
         <v-card
             height="70vh"
-            width="70vw"
+            width="80vw"
             class="px-5 py-6"
             style="background-color: #1A1A27"
         >

@@ -10,7 +10,10 @@
         color="#1A1A27"
         dark
       >
-        <v-app-bar-nav-icon @click="drawer = true"></v-app-bar-nav-icon>
+        <v-app-bar-nav-icon 
+        @click="drawer = true"
+        style="background-color: transparent !important"
+        ></v-app-bar-nav-icon>
         <v-toolbar-title>Title</v-toolbar-title>
       </v-app-bar>
       <div style="height:92%; overflow:auto;"><router-view ></router-view></div>
@@ -33,9 +36,6 @@
           </v-list-item-avatar>
           <v-list-item-title>{{user.fullname}}</v-list-item-title>
         </v-list-item>
-
-        
-          
         <v-list
           nav
           dense

@@ -1,13 +1,6 @@
 <template>
     <div>
-        <v-img class="banner"
-			src="@/assets/img/png/banner.png"
-			weight="10wh"
-		></v-img>
-        <div class="pa-4">
-            
-            <profile></profile>
-        </div>
+        <profile></profile>
     </div>
 	
 </template>

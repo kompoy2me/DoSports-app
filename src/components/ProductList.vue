@@ -24,7 +24,7 @@
 
         <v-overlay
         :color="'#000'"
-        opacity=0.6
+        opacity=0.8
         v-model="overlay">
             <prod-cover :prod="checkedProd"></prod-cover>
             <v-btn

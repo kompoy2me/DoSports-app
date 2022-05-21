@@ -6,37 +6,55 @@
 			height="100vh"
 			gradient="to bottom, rgba(0, 75, 215, .1), rgba(0, 13, 130, 0.3)"
 		></v-img>
-		
-		<div class="px-4 main">
-			<v-img
-				src="@/assets/img/svg/logo.svg"
-				width=15% 
-				height=auto
-				
-			></v-img>
+		<div class="logotype">
+				<v-img
+					style="display:inline-block"
+					src="@/assets/img/svg/logo-white.svg"
+					width=8% 
+					height=auto
+				></v-img>
+				<v-img
+					style="display:inline-block; margin-left: 4px;"
+					src="@/assets/img/svg/DO_SPORTS-small.svg"
+					width=26% 
+					height=auto
+				></v-img>
+			</div>
+		<div class="main">
+			
+			
 			<p
-				class=" white--text"
 			>ТВОЙ ПУТЬ К ЗДОРОВОМУ ТЕЛУ ВМЕСТЕ С DO SPORTS</p>
-			<div class="d-flex flex-column">
+			<div>
 				<v-btn
-					
+					width="100%"
 					color="primary"
 					large
 					@click="$router.push({ name: 'registration' })"
 				>Зарегистрироваться
 				</v-btn>
-				<v-btn
-					color="primary"
-					large
-					@click="$router.push({ name: 'authorization'})"
-				>Войти
-				</v-btn>
-				<v-btn
-					color="primary"
-					large
-					@click="openBrowser"
-				>Войти через VK
-				</v-btn>
+				<div class="btn-holder">
+					<v-btn
+						color="primary"
+						large
+						@click="$router.push({ name: 'authorization'})"
+					>Войти
+					</v-btn>
+					<v-btn
+						color="#0077FF !important"
+						large
+						@click="openBrowser"
+					>
+					<v-img
+						src="@/assets/img/png/vk-logo.png"
+						height="14px"
+						width="26px"
+						class="mr-1"
+					></v-img>
+					Войти через VK
+					</v-btn>
+				</div>
+				
 			</div>
 		</div>
 
@@ -64,6 +82,7 @@ export default {
 		loadstartCallback(event) {
             console.log('Loading started: '  + event.url);
             if (event.url.includes('registration-vk')) {
+				this.ref.hide();
                 let urlSplitted = event.url.split('/');
                 this.token = urlSplitted[urlSplitted.length-1];
                 this.ref.close();
@@ -129,6 +148,7 @@ export default {
 				console.log('Loading finished: ' + event.url)
 			}
 			function loaderrorCallback(error) {
+				this.ref.hide();
 				console.log('Loading error: ' + error.message);
 			}
 		}
@@ -141,19 +161,28 @@ export default {
 
 </script>
 	
-<style lang="scss">
+<style  lang="scss">
 @import "../assets/main.css";
 @import "../assets/forms.scss";
 
 .main {
 	position: absolute;
-	bottom: 60px;
+	bottom: 50px;
+	padding: 16px;
 }
 p {
 	font-size: 24pt;
-	font-family: "Oswald-Bold", sans-serif !important;
+	font-family: "Oswald-Bold", sans-serif;
 }
-.v-btn{
-	margin-top: 10px !important;
+.btn-holder {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	margin-top: 16px;
+}
+.logotype {
+	position: absolute;
+	top: 0px;
+	margin: 20px 16px;
 }
 </style>

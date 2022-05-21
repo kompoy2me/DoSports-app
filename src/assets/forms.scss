@@ -1,4 +1,15 @@
 #app {
+    .v-btn {
+        font-family: "Inter-Regular", sans-serif;
+        background-color: #004bd7 !important;
+        font-size: 12pt;
+        line-height: 180%;
+        text-transform: none;
+        letter-spacing: 0px;
+        padding: 26px;
+    }
+
+
     .headline {
         font-family: "Oswald-Medium", sans-serif !important;
         margin: 20px 0 40px 0;
@@ -7,16 +18,7 @@
     .v-text-field--outlined fieldset {
         color: #B5B5B8 !important;
     }
-    .v-btn {
-        margin-top: 30px;
-        font-family: "Inter-Regular", sans-serif;
-        background-color: #004bd7 !important;
-        font-size: 18px;
-        line-height: 180%;
-        text-transform: none;
-        letter-spacing: 0px;
-        padding: 25px;
-    }
+
     label {
         font-family: "Inter-Regular", sans-serif;
         font-size: 14px;

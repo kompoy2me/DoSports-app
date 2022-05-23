@@ -155,7 +155,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions(["showLifestyleList", "showWeightCategoryList", "createProgram", "checkActiveProgram"]),
+        ...mapActions(["showLifestyleList", "showWeightCategoryList", "createProgram", "checkActiveProgram", "initSchedule"]),
         calculateProgram() {
             if (this.$refs.form.validate()) {
                 this.program.norm = this.pfc();
@@ -165,6 +165,7 @@ export default {
                     if (this.createProgramStatus === "Success") {
                         console.log(JSON.stringify(this.program))
                         localStorage.setItem("program", JSON.stringify(this.program));
+                        this.createScedule();
                         alert("Успешно");
                         this.$router.push({ name: 'sport'});
                     }
@@ -226,6 +227,9 @@ export default {
                 return -calories * 0.2;
             }
         },
+        createScedule() {
+            this.initSchedule();
+        }
     },
      watch: {
         bmi() {

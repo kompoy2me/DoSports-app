@@ -77,7 +77,7 @@ export default {
 		}
 	},
     methods: {
-		...mapActions(["checkUserVk", "checkUserVkInDb","checkActiveProgram","authRequest", "checkAccess", "showProgram"]),
+		...mapActions(["checkUserVk", "checkUserVkInDb","checkActiveProgram","authRequest", "checkAccess", "showProgram", "initSchedule"]),
 
 		loadstartCallback(event) {
             console.log('Loading started: '  + event.url);
@@ -89,6 +89,7 @@ export default {
 				this.authUser();
             }
         },
+		
 		authUser() {
 			this.checkUserVk(this.token).then(() => {
 				if (this.getUserVkData) {
@@ -110,6 +111,7 @@ export default {
 				}
 			})
 		},
+
 		checktUserData(){
             this.checkAccess().then(() => {
                 if (this.getUser) {
@@ -121,21 +123,29 @@ export default {
                 }
             })
         },
+
         checkUserProgram() {
             this.checkActiveProgram(this.getUser.id).then(() =>{
                 console.log(this.getUser.id, this.activeProgramStatus);
                 if (!this.activeProgramStatus) {
                     this.$router.push({ name: 'start-prog'})
+					
                 }
                 else {
                     //скачать программу пользователя
                     this.showProgram(this.getUser).then(() => {
                         localStorage.setItem("program", JSON.stringify(this.programData));
-                    })
+						this.createScedule();
+                    });
                     this.$router.push({name: "main"});
                 }
             })
         },
+
+		createScedule() {
+            this.initSchedule();
+        },
+
         /*eslint-disable*/
         openBrowser() {
 			this.ref = cordova.InAppBrowser.open('https://dosports.ru/api/vk-auth', '_blank', 'location=no');

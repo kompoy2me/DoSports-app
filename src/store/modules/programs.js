@@ -9,9 +9,58 @@ export default {
         statusActiveProgram: "",
         program: {},
         foods: [],
+        currentDateProgram: {day: 1, week: 1},
+        scheduleProgram: {},
+        diet: [],
     },
 
     actions: {
+        async initSchedule(ctx) {
+            console.log(JSON.stringify(ctx.state.program) );
+            let weeks = {};
+            for (let i = 0; i < 3; i++) {
+                let days = {};
+                ctx.state.week = i;
+                console.log('1 day of program', ctx.state.program.date_start);
+                for (let j = 0; j < 7; j++) {
+                    let date = new Date(ctx.state.program.date_start);
+                    date.setDate(date.getDate() + i * 7 + j);
+                    console.log('schedule date',date);
+                    days[`${j + 1}`] = {
+                        id: j + 1,
+                        date: date,
+                        weekDay: date.getDay(),
+                        eaten: {
+                            calories: 0,
+                            proteins: 0,
+                            fats: 0,
+                            carbohydrates: 0,
+                            fibers: 0
+                        }
+                    }
+                }
+                weeks[`${i + 1}`] = {
+                    id: i + 1,
+                    days: days
+                }
+            }
+            ctx.commit("updateSchedule", weeks);
+        },
+
+        async showProgramDiet(ctx, input) {
+            await axios.post(`${url}/api/programs/get-program-diet`, input).then((res) => {
+                ctx.commit(`updateProgramDiet`, res.data);
+            });
+        },
+
+        async setCurrentWeek(ctx, week) {
+            ctx.commit("updateCurrentWeek", week);
+        },
+
+        async setCurrentDay(ctx, day) {
+            ctx.commit("updateCurrentDay", day);
+        },
+
         async showLifestyleList(ctx) {
             await axios.get(`${url}/api/programs/get-lifestyles`).then((res) => {
                 ctx.commit(`updateLifestyleList`, res.data);
@@ -76,12 +125,40 @@ export default {
         updateProgramData(state, program) {
             state.program = program;
         },
+
         updateFoods(state, foods) {
             state.foods = foods;
-        }
+        },
+
+        updateCurrentWeek(state, week) {
+            state.currentDateProgram.week = week;
+        },
+
+        updateCurrentDay(state, day) {
+            state.currentDateProgram.day = day;
+        },
+
+        updateSchedule(state, schedule) {
+            state.scheduleProgram = schedule;
+            console.log('created schedule', JSON.stringify( schedule));
+            localStorage.setItem("schedule", JSON.stringify( schedule));
+        },
+        
+        updateProgramDiet(state, diet) {
+            console.log('DIET ', JSON.stringify(diet));
+            state.diet = diet;
+        },
     },
 
     getters: {
+        schedule(state) {
+            return state.scheduleProgram;
+        },
+
+        currentDate(state) {
+            return state.currentDateProgram;
+        },
+
         lifestyleList(state) {
             return state.lifestyles;
         },
@@ -101,6 +178,7 @@ export default {
         programData(state) {
             return state.program;
         },
+
         getFoods(state) {
             return state.foods;
         }

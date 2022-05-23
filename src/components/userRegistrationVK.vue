@@ -213,11 +213,9 @@ export default {
         this.updateRules();
     },
     created() {
-        
         this.setVkData();
         console.log('newUserVK ', JSON.stringify(this.getUserVkData));
         console.log(localStorage.getItem('user-auth'), localStorage.getItem('user'));
-        
     }
 }
 </script>

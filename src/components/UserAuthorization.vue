@@ -71,7 +71,7 @@ export default {
         ...mapGetters(["activeProgramStatus","getMessage", "getUser", "programData"])
     },
     methods: {
-        ...mapActions(["checkActiveProgram","authRequest", "checkAccess", "showProgram"]),
+        ...mapActions(["checkActiveProgram","authRequest", "checkAccess", "showProgram", "initSchedule"]),
 
         async authUser() {
             if (this.$refs.form.validate()) {
@@ -110,10 +110,15 @@ export default {
                     //скачать программу пользователя
                     this.showProgram(this.getUser).then(() => {
                         localStorage.setItem("program", JSON.stringify(this.programData));
-                    })
+                        this.createScedule();
+                    });
+                    
                     this.$router.push({name: "main"});
                 }
             })
+        },
+        createScedule() {
+            this.initSchedule();
         }
     }  
 }

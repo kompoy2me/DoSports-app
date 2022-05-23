@@ -94,6 +94,7 @@ export default{
             localStorage.removeItem("user-token-refresh");
             localStorage.removeItem("user");
             localStorage.removeItem("program");
+            localStorage.removeItem("schedule");
             state.tokenAccess = "";
             state.tokenRefresh = "";
         },
@@ -105,6 +106,7 @@ export default{
             localStorage.removeItem("user-token-refresh");
             localStorage.removeItem("user");
             localStorage.removeItem("program");
+            localStorage.removeItem("schedule");
             state.tokenAccess = "";
             state.tokenRefresh = "";
         },

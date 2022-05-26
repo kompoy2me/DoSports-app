@@ -12,45 +12,131 @@ export default {
         currentDateProgram: {day: 1, week: 1},
         scheduleProgram: {},
         diet: [],
+        formDate: '',
     },
 
     actions: {
+        
         async initSchedule(ctx) {
-            console.log(JSON.stringify(ctx.state.program) );
             let weeks = {};
-            for (let i = 0; i < 3; i++) {
+            // задать недели
+            for (let w = 0; w < 3; w++) {
                 let days = {};
-                ctx.state.week = i;
-                console.log('1 day of program', ctx.state.program.date_start);
-                for (let j = 0; j < 7; j++) {
+                // задать дни
+                for (let d = 0; d < 7; d++) {
                     let date = new Date(ctx.state.program.date_start);
-                    date.setDate(date.getDate() + i * 7 + j);
-                    console.log('schedule date',date);
-                    days[`${j + 1}`] = {
-                        id: j + 1,
+                    date.setDate(date.getDate() + w * 7 + d);
+                    days[`${d + 1}`] = {
+                        id: d + 1,
                         date: date,
                         weekDay: date.getDay(),
-                        eaten: {
-                            calories: 0,
-                            proteins: 0,
-                            fats: 0,
-                            carbohydrates: 0,
-                            fibers: 0
-                        }
+                        diet: {}
                     }
+                    let month = date.getMonth() + 1;
+                    let date_input = `${date.getDate() < 10 ? '0' + date.getDate() : date.getDate()}.${month < 10 ? '0' + month : month}.${date.getFullYear()}`;
+                    let input = {
+                        idProgram: ctx.state.program.id,
+                        date: date_input,
+                    }
+                    await ctx.dispatch('showProgramDiet', input).then(() => {
+                        days[`${d + 1}`].diet = ctx.state.diet;
+                    });
                 }
-                weeks[`${i + 1}`] = {
-                    id: i + 1,
+                console.log('DAYS ', JSON.stringify(days));
+                weeks[`${w + 1}`] = {
+                    id: w + 1,
                     days: days
                 }
             }
             ctx.commit("updateSchedule", weeks);
         },
 
+        /*eslint-disable*/
         async showProgramDiet(ctx, input) {
-            await axios.post(`${url}/api/programs/get-program-diet`, input).then((res) => {
-                ctx.commit(`updateProgramDiet`, res.data);
+            let calcParams = (ratio, grams) => {
+                let value = ratio * grams / 100;
+                return (+value.toFixed(1));
+            }
+            let round = (value) => {
+                return (+value.toFixed(1));
+            }
+             // получить все приемы пищи на день
+             await axios.post(`${url}/api/programs/get-program-diet`, input).then(async (res) => {
+                let diet = Array.from(res.data);
+                console.log('get-program-diet ', JSON.stringify(res.data));
+                // свойства на весь день
+                diet.proteins = 0;
+                diet.fats = 0;
+                diet.carbohydrates = 0;
+                diet.calories = 0;
+                diet.fibers = 0;
+                for (let i = 0; i < diet.length; i++) {
+                    // на каждый прием пищи получить продукты
+                    await axios.get(`${url}/api/programs/get-meal-foods/${diet[i].id}`).then((res) => {
+                        diet[i].foods = res.data;
+                        console.log('get-meal-foods ', JSON.stringify(res.data));
+                        // свойства на прием пищи
+                        diet[i].proteins = 0;
+                        diet[i].fats = 0;
+                        diet[i].carbohydrates = 0;
+                        diet[i].calories = 0;
+                        diet[i].fibers = 0;
+
+                        for (let j = 0; j < diet[i].foods.length; j++) {
+                            // относительные свойства, зависящие от граммовки
+                            diet[i].foods[j].proteinsCalc = calcParams(diet[i].foods[j].proteins, diet[i].foods[j].amount);
+                            diet[i].foods[j].fatsCalc = calcParams(diet[i].foods[j].fats, diet[i].foods[j].amount);
+                            diet[i].foods[j].carbohydratesCalc = calcParams(diet[i].foods[j].carbohydrates, diet[i].foods[j].amount);
+                            diet[i].foods[j].caloriesCalc = calcParams(diet[i].foods[j].calories, diet[i].foods[j].amount);
+                            diet[i].foods[j].fibersCalc = calcParams(diet[i].foods[j].fibers, diet[i].foods[j].amount);
+
+                            diet[i].proteins += diet[i].foods[j].proteinsCalc;
+                            diet[i].fats += diet[i].foods[j].fatsCalc;
+                            diet[i].carbohydrates += diet[i].foods[j].carbohydratesCalc;
+                            diet[i].calories += diet[i].foods[j].caloriesCalc;
+                            diet[i].fibers += diet[i].foods[j].fibersCalc;
+                        }
+
+                        diet[i].proteins = round(diet[i].proteins);
+                        diet[i].fats = round(diet[i].fats);
+                        diet[i].carbohydrates = round(diet[i].carbohydrates);
+                        diet[i].calories = round(diet[i].calories);
+                        diet[i].fibers = round(diet[i].fibers);
+
+                        diet.proteins += diet[i].proteins;
+                        diet.fats += diet[i].fats;
+                        diet.carbohydrates += diet[i].carbohydrates;
+                        diet.calories += diet[i].calories;
+                        diet.fibers += diet[i].fibers;
+                    });
+                    diet.proteins = round(diet.proteins);
+                    diet.fats = round(diet.fats);
+                    diet.carbohydrates = round(diet.carbohydrates);
+                    diet.calories = round(diet.calories);
+                    diet.fibers = round(diet.fibers);
+                }
+                //return diet
+                ctx.commit(`updateProgramDiet`, diet);
+                
+                //days[`${d + 1}`].diet = diet;
             });
+        },
+
+        async updateDietSchedule(ctx, date) {
+            let schedule = JSON.parse( localStorage.getItem('schedule'));
+            let program = JSON.parse( localStorage.getItem('program'));
+            let date_input = new Date(program.date_start);
+            date_input.setDate(date_input.getDate() + (date.week - 1) * 7 + (date.day - 1));
+            ctx.commit(`formatDate`, date_input);
+            let input = {
+                idProgram: program.id,
+                date: ctx.state.formDate,
+            }            
+            await ctx.dispatch('showProgramDiet', input).then( () => {
+                schedule[date.week].days[date.day].diet = ctx.state.diet;
+                localStorage.setItem('schedule', JSON.stringify(schedule));
+                console.log('new diet in schedule ', JSON.parse(localStorage.getItem('schedule'))[date.week].days[date.day].diet);
+            }); 
         },
 
         async setCurrentWeek(ctx, week) {
@@ -98,11 +184,13 @@ export default {
                 }
             });
         },
+
         async showFoods(ctx) {
             await axios.get(`${url}/api/programs/get-foods`).then((res) => {
                 ctx.commit(`updateFoods`, res.data);
             });
-        }
+        },
+      
     },
 
     mutations: {
@@ -140,13 +228,22 @@ export default {
 
         updateSchedule(state, schedule) {
             state.scheduleProgram = schedule;
-            console.log('created schedule', JSON.stringify( schedule));
-            localStorage.setItem("schedule", JSON.stringify( schedule));
+            console.log('created schedule', JSON.stringify(schedule));
+            localStorage.setItem("schedule", JSON.stringify(schedule));
         },
         
         updateProgramDiet(state, diet) {
-            console.log('DIET ', JSON.stringify(diet));
+            console.log('created diet ', JSON.stringify(diet));
+            localStorage.setItem("diet", JSON.stringify(diet));
             state.diet = diet;
+        },
+
+        formatDate(state, date) {
+            let d = new Date(date);
+            let day = d.getDate();
+            let month = d.getMonth() + 1;
+            let year = d.getFullYear();
+            state.formDate = `${day < 10 ? '0' + day : day}.${month < 10 ? '0' + month : month}.${year}`;
         },
     },
 
@@ -181,6 +278,10 @@ export default {
 
         getFoods(state) {
             return state.foods;
+        },
+
+        programDiet(state) {
+            return state.diet;
         }
     }
 }

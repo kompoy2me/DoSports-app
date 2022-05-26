@@ -66,7 +66,7 @@
                 <v-list-item-icon>
                     <v-icon>mdi-home</v-icon>
                 </v-list-item-icon>
-                <v-list-item-title>Дневник</v-list-item-title>
+                <v-list-item-title>Приемы пищи</v-list-item-title>
             </v-list-item>
             <v-list-item
                 @click="$router.push({ name: 'atlas'}).catch(err => {})"

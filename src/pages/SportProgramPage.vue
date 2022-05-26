@@ -1,9 +1,9 @@
 <template>
 	<div >
         <div v-if="userProg.is_active">
-            <weeks-viewer></weeks-viewer>
-            <product-list></product-list>
-            <!--<program-base class="mx-4"></program-base>-->
+            
+            <!--<product-list></product-list>-->
+            <program-base class="mx-4"></program-base>
         </div>
         
     </div>
@@ -12,12 +12,12 @@
 <script>
 /*eslint-disable*/
 import ProgramBase from '../components/ProgramBase.vue';
-import WeeksViewer from '../components/WeeksViewer.vue';
+
 import ProductList from '../components/ProductList.vue';
 import {mapActions, mapGetters} from "vuex";
 
 export default {
-    components: { ProgramBase, WeeksViewer, ProductList},
+    components: { ProgramBase, ProductList},
 	data: () => ({
         user: null,
         userProg: null,

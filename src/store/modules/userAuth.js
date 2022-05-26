@@ -83,7 +83,7 @@ export default{
         updateMessage(state, message) {
             state.msgAuth = message;
         },
-        updateUser(state, user) {
+        async updateUser(state, user) {
             state.user = user;
             console.log("user updated", state.user)
         },
@@ -95,6 +95,7 @@ export default{
             localStorage.removeItem("user");
             localStorage.removeItem("program");
             localStorage.removeItem("schedule");
+            localStorage.removeItem("diet");
             state.tokenAccess = "";
             state.tokenRefresh = "";
         },
@@ -107,6 +108,7 @@ export default{
             localStorage.removeItem("user");
             localStorage.removeItem("program");
             localStorage.removeItem("schedule");
+            localStorage.removeItem("diet");
             state.tokenAccess = "";
             state.tokenRefresh = "";
         },

@@ -17,7 +17,7 @@ export default {
     ...mapActions(["unauthorized", "checkAccess", "showProgram", "checkActiveProgram"]),
 
     updateLocalUser() {
-      this.checkAccess().then(() => {
+      this.checkAccess().then( async () => {
         if (this.getUser) {
           localStorage.setItem("user", JSON.stringify(this.getUser));
           this.updateUserProgram();
@@ -29,12 +29,12 @@ export default {
     },
 
     updateUserProgram() {
-      this.checkActiveProgram(this.getUser.id).then(() =>{
+      this.checkActiveProgram(this.getUser.id).then( async () =>{
         if (!this.activeProgramStatus) {
               this.$router.push({ name: 'start-prog'});
         } else {
               //скачать программу пользователя
-              this.showProgram(this.getUser).then(() => {
+              this.showProgram(this.getUser).then( async () => {
                   localStorage.setItem("program", JSON.stringify(this.programData));
               })
           }

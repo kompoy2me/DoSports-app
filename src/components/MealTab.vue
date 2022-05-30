@@ -3,47 +3,67 @@
       <v-card style="background-color: #1A1A27" class="px-4 pt-5">
         <div class="meal-head">
             <div style="font-size: 16pt">
-                {{meal.time}}
+                {{meal.time}} 
             </div>
             <v-divider 
                 color="#fff"
                 class="mx-3"></v-divider>
-            <div style="font-size: 10pt; text-decoration: underline">Редактировать</div>
+            <div 
+                style="font-size: 10pt; 
+                text-decoration: underline"
+                @click="openMeal"
+            >
+                Редактировать
+            </div>
         </div>
         <div 
         class="pa-4"
         style="font-size:10pt; color: #b5b5b8"
         v-if="meal.foods.length === 0">
-            Продукты еще не назначены
+            Продукты еще не добавлены
         </div>
         <div v-else>
             <v-expand-transition>
                 <div v-show="show">
                     <div>
+                        <div class="py-4">
+                           <div 
+                                class="px-4 py-1"
+                                v-for="food in meal.foods"
+                                :key="food.id"
+                            >
+                                {{food.name}}
+                            </div> 
+                        </div>
+                        
                         <v-simple-table style="background-color: #1A1A27">
                             <template v-slot:default>
 
                             <tbody>
                                 <tr>
                                     <td>Белки</td>
-                                    <td>{{Math.round( meal.proteins)}}</td>
+                                    <td>{{( meal.proteins).toFixed(1)}}</td>
                                 </tr>
                                 <tr>
                                     <td>Жиры</td>
-                                    <td>{{Math.round( meal.fats)}}</td>
+                                    <td>{{( meal.fats).toFixed(1)}}</td>
                                 </tr>
                                 <tr>
                                     <td>Углеводы</td>
-                                    <td>{{Math.round( meal.carbohydrates)}}</td>
-                                </tr>
-                                <tr>
-                                    <td>Клетчатка</td>
-                                    <td>{{Math.round( meal.fibers)}}</td>
+                                    <td>{{( meal.carbohydrates).toFixed(1)}}</td>
                                 </tr>
                                 <tr>
                                     <td>Калории</td>
-                                    <td>{{Math.round( meal.calories)}}</td>
+                                    <td>{{( meal.calories).toFixed(1)}}</td>
                                 </tr>
+                                <tr>
+                                    <td>Клетчатка</td>
+                                    <td>{{( meal.fibers).toFixed(1)}}</td>
+                                </tr>
+                                <!--<tr>
+                                    <td>Гликемический индекс</td>
+                                    <td>0</td>
+                                </tr>-->
 
                             </tbody>
                             </template>
@@ -62,21 +82,32 @@
                 </v-btn>
             </v-card-actions>
         </div>
-        
-        
-        
     </v-card>
   </div>
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
 export default {
     props: {
-        meal: {}
+        meal: {},
+        currDate: {}
     },
     data: () => ({
         show: false,
-    })
+    }),
+    
+    methods: {
+        ...mapActions(['setCurrMeal', 'setCurrDate']),
+        openMeal() {
+            this.setCurrMeal(this.meal);
+            this.setCurrDate(this.currDate);
+            this.$router.push({ name: 'edit-meal'})
+        }
+    },
+    computed: {
+        ...mapGetters(['currMeal'])
+    }
 }
 </script>
 

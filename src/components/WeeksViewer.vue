@@ -4,6 +4,7 @@
         <v-sheet
             max-width="100%"
             style="background-color: #1A1A27"
+            height="18vh"
         >
         <v-slide-group
                 v-model="modelWeeks"
@@ -34,7 +35,7 @@
                 center-active
                 show-arrows
                 mandatory
-                class="pb-2"
+                
             >
                 <v-slide-item
                     v-for="n in 7"
@@ -92,7 +93,7 @@ export default {
                     this.modelWeeks = 2;
                 }
             }
-            console.log('WEEK ', this.modelWeeks);
+            //console.log('WEEK ', this.modelWeeks);
         },
         nowDay() {
             let schedule = JSON.parse(localStorage.getItem('schedule'));
@@ -101,12 +102,12 @@ export default {
                 let nowDate = new Date().getDate();
                 let difference = (nowDate - startDate) % 7;
                 this.modelDays = difference;
-                console.log('DAY ',this.modelDays);
+                //console.log('DAY ',this.modelDays);
                 
             }
         },
     },
-    mounted() {
+    created() {
         this.nowWeek();
         this.nowDay();
     }

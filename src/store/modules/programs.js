@@ -5,6 +5,7 @@ export default {
     state: {
         lifestyles: [],
         weightCategories: [],
+        foodCategories: [],
         statusCreateProgram: "",
         statusActiveProgram: "",
         program: {},
@@ -13,6 +14,8 @@ export default {
         scheduleProgram: {},
         diet: [],
         formDate: '',
+        currMeal: null,
+        currDate: null,
     },
 
     actions: {
@@ -42,7 +45,6 @@ export default {
                         days[`${d + 1}`].diet = ctx.state.diet;
                     });
                 }
-                console.log('DAYS ', JSON.stringify(days));
                 weeks[`${w + 1}`] = {
                     id: w + 1,
                     days: days
@@ -63,7 +65,6 @@ export default {
              // получить все приемы пищи на день
              await axios.post(`${url}/api/programs/get-program-diet`, input).then(async (res) => {
                 let diet = Array.from(res.data);
-                console.log('get-program-diet ', JSON.stringify(res.data));
                 // свойства на весь день
                 diet.proteins = 0;
                 diet.fats = 0;
@@ -74,7 +75,6 @@ export default {
                     // на каждый прием пищи получить продукты
                     await axios.get(`${url}/api/programs/get-meal-foods/${diet[i].id}`).then((res) => {
                         diet[i].foods = res.data;
-                        console.log('get-meal-foods ', JSON.stringify(res.data));
                         // свойства на прием пищи
                         diet[i].proteins = 0;
                         diet[i].fats = 0;
@@ -115,10 +115,7 @@ export default {
                     diet.calories = round(diet.calories);
                     diet.fibers = round(diet.fibers);
                 }
-                //return diet
                 ctx.commit(`updateProgramDiet`, diet);
-                
-                //days[`${d + 1}`].diet = diet;
             });
         },
 
@@ -185,11 +182,25 @@ export default {
             });
         },
 
+        async showFoodCategories(ctx) {
+            await axios.get(`${url}/api/programs/get-food-categories`).then((res) => {
+                    ctx.commit("updateFoodCategories", res.data); 
+            });
+        },
+
         async showFoods(ctx) {
             await axios.get(`${url}/api/programs/get-foods`).then((res) => {
                 ctx.commit(`updateFoods`, res.data);
             });
         },
+
+        setCurrMeal(ctx, meal) {
+            ctx.commit('updateCurrMeal', meal)
+        },
+        
+        setCurrDate(ctx, date) {
+            ctx.commit('updateCurrDate', date)
+        }
       
     },
 
@@ -245,6 +256,15 @@ export default {
             let year = d.getFullYear();
             state.formDate = `${day < 10 ? '0' + day : day}.${month < 10 ? '0' + month : month}.${year}`;
         },
+        updateCurrMeal(state, meal) {
+            state.currMeal = meal;
+        },
+        updateCurrDate(state, date) {
+            state.currDate = date;
+        },
+        updateFoodCategories(state, data) {
+            state.foodCategories = data;
+        }
     },
 
     getters: {
@@ -282,6 +302,15 @@ export default {
 
         programDiet(state) {
             return state.diet;
+        },
+        currMeal(state) {
+            return state.currMeal;
+        },
+        currDate(state) {
+            return state.currDate;
+        },
+        foodCategories(state) {
+            return state.foodCategories;
         }
     }
 }

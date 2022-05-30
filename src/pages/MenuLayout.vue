@@ -6,7 +6,7 @@
     >
     <div style="height:100vh; overflow: auto; ">
       <v-app-bar
-        style="height:8%"
+        style="height:8%; z-index: 50;"
         color="#1A1A27"
         dark
       >
@@ -14,15 +14,14 @@
         @click="drawer = true"
         style="background-color: transparent !important"
         ></v-app-bar-nav-icon>
-        <v-toolbar-title>Title</v-toolbar-title>
+        <v-toolbar-title></v-toolbar-title>
       </v-app-bar>
       <div style="height:92%; overflow:auto;"><router-view ></router-view></div>
       
     </div>
 
-
-
       <v-navigation-drawer
+        style="z-index: 100;"
         v-model="drawer"
         color="#1A1A27"
         absolute

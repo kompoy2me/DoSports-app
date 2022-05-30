@@ -6,23 +6,18 @@
             class="px-5 py-6"
             style="background-color: #1A1A27"
         >
-        Укажите количество
+        <div>Укажите количество</div>
+        <div>
             {{prod.name}}
+        </div>    
         
         <v-slider
+            class="my-4"
             v-model="val"
             :color="'#fff'"
         ></v-slider>
          <v-simple-table style="background-color: #1A1A27">
             <template v-slot:default>
-            <thead>
-                <tr>
-                <th></th>
-                <th class="text-left">
-                    Количество
-                </th>
-                </tr>
-            </thead>
             <tbody>
                 <tr>
                     <td>Белки</td>
@@ -52,6 +47,10 @@
             </tbody>
             </template>
         </v-simple-table>
+        <div>
+            <div>Отмена</div>
+            <v-btn>Добавить</v-btn>
+        </div>
         </v-card>
         
     </div>

@@ -126,7 +126,7 @@ export default {
 }
 .user-body {
     overflow: auto;
-    height: 60%;
+    height: 65%;
 }
 .userAvatar {
     width: 100%;

@@ -63,7 +63,20 @@ const routes = [
 				path: '/user',
 				name: 'user',
 				component: () => import('@/pages/UserPage')
-			}
+			},
+			{
+				path: '/edit-meal',
+				name: 'edit-meal',
+				props: true,
+				component: () => import('@/pages/EditMealPage')
+			},
+			{
+				path: '/search-prod',
+				name: 'search-prod',
+				props: true,
+				component: () => import('@/pages/SearchProdPage')
+			},
+
 		]
 	},
 ];

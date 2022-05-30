@@ -5,7 +5,8 @@
             @curr-data="setCurrData"
         ></weeks-viewer>
 
-        <!--{{dailyMeals.date}} 
+        <!--{{dailyMeals.diet}} 
+        {{dailyMeals.diet.indexOf(dailyMeals.diet[0])}}
         {{dailyMeals.diet.length}}-->
 
         <div 
@@ -21,13 +22,16 @@
         <div 
             class="px-4"
         v-else>
+        <div v-if="dailyMeals != null">
             <div 
                 v-for="meal in dailyMeals.diet" 
                 :key="meal.id_order"
                 class="py-3"
             >
-                <meal-tab :meal="meal"></meal-tab>
+                <meal-tab :meal="meal" :currDate="currentData"></meal-tab>
             </div>
+        </div>
+            
 
             <div
                 class="mt-2 mb-10"
@@ -43,8 +47,6 @@
             </div>
 
         </div>
-        
-
         <v-overlay
         :color="'#000'"
         opacity=0.8
@@ -156,9 +158,9 @@ export default {
         },
     },
     watch: {
-        schedule: function() {
-            this.initMeals();
-        }
+        currentData: function () {
+            alert('!!');
+        },
     },
     methods: {
         ...mapActions(["showProgramDiet", "initSchedule", "showProgramDiet", "updateDietSchedule"]),
@@ -171,7 +173,8 @@ export default {
             this.currentData.day = day + 1;
             this.currentData.week = week + 1;
             this.initMeals();
-            //console.log('UPDATED CURRDATA ', this.currentData.week, this.currentData.day)
+            this.updateMeals();
+            console.log('UPDATED CURRDATA ', this.currentData.week, this.currentData.day)
         },
         
         async createProgramDiet() {
@@ -287,11 +290,22 @@ export default {
                     }
                 });
             }
+        },
+        async updateMeals() {
+            if (navigator.connection.type != "none") {
+                await this.updateDietSchedule(this.currentData).then( () => {
+                    this.schedule = JSON.parse(localStorage.getItem('schedule'));
+                    this.initMeals();
+                })
+            } else {
+                this.schedule = JSON.parse(localStorage.getItem('schedule'));
+                this.initMeals();
+            }
         }
     },
     mounted() {
-        this.schedule = JSON.parse(localStorage.getItem('schedule'));
-        this.initMeals();
+        console.log(`DATE ${this.currentData.week, this.currentData.day}`);
+        this.updateMeals();
     }
 }
 </script>

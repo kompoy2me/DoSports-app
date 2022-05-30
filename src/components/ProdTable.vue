@@ -1,13 +1,30 @@
 <template>
   <div>
         <v-card
-            class="mx-4 mb-6 px-2 py-6"
+            class="mx-4 mb-2 px-2"
             style="background-color: #1A1A27"
         >
-          <v-simple-table style="background-color: #1A1A27">
-              <thead>
-                  <td colspan="6" class="pl-3 food-headline">{{food.name}}</td>
-                  <tr>
+          <table class="py-1">
+                <td colspan="6" class="food-headline ma-0 px-3 pb-3" >
+                    <div class="d-flex align-top">
+                        <div 
+                            @click="editFood(food)"
+                            class="d-flex align-top" 
+                            style="width: 100%; ">
+
+                            <div>{{food.name}} ({{food.amount}}г)</div>
+                        </div>
+                        <div class="dele">
+                            <v-icon 
+                                @click="clickDel(food.id)"
+                                dense>
+                            mdi-window-close
+                            </v-icon>
+                        </div>
+                    </div>
+                </td>
+
+                  <tr class="food-items" >
                       <th>Б</th>
                       <th>Ж</th>
                       <th>У</th>
@@ -15,17 +32,17 @@
                       <th>Кл</th>
                       <th>ГИ</th>
                   </tr>
-                </thead>
+
                   <tr class="t-params ">
-                      <th>{{food.proteins}}</th>
-                      <th>{{food.fats}}</th>
-                      <th>{{food.carbohydrates}}</th>
-                      <th>{{food.calories}}</th>
-                      <th>{{food.fibers}}</th>
+                      <th>{{(food.proteins * (food.amount/100)).toFixed(1)}}</th>
+                      <th>{{(food.fats * (food.amount/100)).toFixed(1)}}</th>
+                      <th>{{(food.carbohydrates * (food.amount/100)).toFixed(1)}}</th>
+                      <th>{{(food.calories * (food.amount/100)).toFixed(1)}}</th>
+                      <th>{{(food.fibers * (food.amount/100)).toFixed(1)}}</th>
                       <th>{{food.glycemic_index}}</th>
                   </tr>
               
-          </v-simple-table>
+          </table>
       </v-card>
   </div>
 </template>
@@ -35,9 +52,14 @@ export default {
     props: {
         food: {}
     },
-    data: () => ({
-
-    }),
+    methods: {
+        editFood(food) {
+            this.$emit('edit-food', food);
+        },
+        clickDel(id) {
+            this.$emit('del-food', id);
+        },
+    }
 }
 
 </script>
@@ -54,5 +76,22 @@ export default {
 }
 .food-headline {
     font-family: "Inter-Medium", sans-serif !important;
+}
+table  {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+   
+}
+.food-items {
+    font-size: 8pt;
+    color: #B5B5B8;
+}
+.row-items {
+    display: flex;
+    flex-direction: row;
+}
+.dele {
+    text-decoration: none !important;
 }
 </style>

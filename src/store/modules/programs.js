@@ -13,9 +13,11 @@ export default {
         currentDateProgram: {day: 1, week: 1},
         scheduleProgram: {},
         diet: [],
+        eaten: {},
         formDate: '',
         currMeal: null,
         currDate: null,
+        programPersonalFoods: [],
     },
 
     actions: {
@@ -42,7 +44,9 @@ export default {
                         date: date_input,
                     }
                     await ctx.dispatch('showProgramDiet', input).then(() => {
+                        
                         days[`${d + 1}`].diet = ctx.state.diet;
+                        days[`${d + 1}`].eaten = ctx.state.eaten;
                     });
                 }
                 weeks[`${w + 1}`] = {
@@ -65,12 +69,14 @@ export default {
              // получить все приемы пищи на день
              await axios.post(`${url}/api/programs/get-program-diet`, input).then(async (res) => {
                 let diet = Array.from(res.data);
+                console.log('got diet ', JSON.stringify(res.data));
                 // свойства на весь день
                 diet.proteins = 0;
                 diet.fats = 0;
                 diet.carbohydrates = 0;
                 diet.calories = 0;
                 diet.fibers = 0;
+                console.log(' diet proteins ', diet.proteins);
                 for (let i = 0; i < diet.length; i++) {
                     // на каждый прием пищи получить продукты
                     await axios.get(`${url}/api/programs/get-meal-foods/${diet[i].id}`).then((res) => {
@@ -108,6 +114,7 @@ export default {
                         diet.carbohydrates += diet[i].carbohydrates;
                         diet.calories += diet[i].calories;
                         diet.fibers += diet[i].fibers;
+                        
                     });
                     diet.proteins = round(diet.proteins);
                     diet.fats = round(diet.fats);
@@ -115,7 +122,17 @@ export default {
                     diet.calories = round(diet.calories);
                     diet.fibers = round(diet.fibers);
                 }
+                let eaten = {
+                    proteins: diet.proteins,
+                    fats: diet.fats,
+                    carbohydrates: diet.carbohydrates,
+                    calories: diet.calories,
+                    fibers: diet.fibers
+                };
+                
+                ctx.commit(`updateEaten`, eaten);
                 ctx.commit(`updateProgramDiet`, diet);
+
             });
         },
 
@@ -131,6 +148,7 @@ export default {
             }            
             await ctx.dispatch('showProgramDiet', input).then( () => {
                 schedule[date.week].days[date.day].diet = ctx.state.diet;
+                schedule[date.week].days[date.day].eaten = ctx.state.eaten;
                 localStorage.setItem('schedule', JSON.stringify(schedule));
                 console.log('new diet in schedule ', JSON.parse(localStorage.getItem('schedule'))[date.week].days[date.day].diet);
             }); 
@@ -200,7 +218,13 @@ export default {
         
         setCurrDate(ctx, date) {
             ctx.commit('updateCurrDate', date)
-        }
+        },
+
+        async showPersonalFoods(ctx, idAuthor) {
+            await axios.get(`${url}/api/programs/get-personal-foods/${idAuthor}`).then((res) => {
+                ctx.commit(`updatePersonalFoods`, res.data);
+            });
+        },
       
     },
 
@@ -248,6 +272,10 @@ export default {
             localStorage.setItem("diet", JSON.stringify(diet));
             state.diet = diet;
         },
+        updateEaten(state, eaten) {
+            console.log('eaten', JSON.stringify(eaten));
+            state.eaten = eaten;
+        },
 
         formatDate(state, date) {
             let d = new Date(date);
@@ -256,15 +284,22 @@ export default {
             let year = d.getFullYear();
             state.formDate = `${day < 10 ? '0' + day : day}.${month < 10 ? '0' + month : month}.${year}`;
         },
+
         updateCurrMeal(state, meal) {
             state.currMeal = meal;
         },
+
         updateCurrDate(state, date) {
             state.currDate = date;
         },
+
         updateFoodCategories(state, data) {
             state.foodCategories = data;
-        }
+        },
+
+        updatePersonalFoods(state, foods) {
+            state.programPersonalFoods = foods;
+        },
     },
 
     getters: {
@@ -303,14 +338,21 @@ export default {
         programDiet(state) {
             return state.diet;
         },
+        
         currMeal(state) {
             return state.currMeal;
         },
+
         currDate(state) {
             return state.currDate;
         },
+
         foodCategories(state) {
             return state.foodCategories;
-        }
+        },
+
+        personalFoods(state) {
+            return state.programPersonalFoods;
+        },
     }
 }

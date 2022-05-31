@@ -68,6 +68,14 @@
                 <v-list-item-title>Приемы пищи</v-list-item-title>
             </v-list-item>
             <v-list-item
+                @click="$router.push({ name: 'personal-food'}).catch(err => {})"
+            >
+                <v-list-item-icon>
+                    <v-icon>mdi-home</v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>Мои продукты</v-list-item-title>
+            </v-list-item>
+            <v-list-item
                 @click="$router.push({ name: 'atlas'}).catch(err => {})"
             >
                 <v-list-item-icon>

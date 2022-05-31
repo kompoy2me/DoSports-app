@@ -3,7 +3,7 @@
         <div v-if="userProg.is_active">
             
             <!--<product-list></product-list>-->
-            <program-base class="mx-4"></program-base>
+            <program-base ></program-base>
         </div>
         
     </div>

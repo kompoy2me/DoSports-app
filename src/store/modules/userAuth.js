@@ -96,6 +96,7 @@ export default{
             localStorage.removeItem("program");
             localStorage.removeItem("schedule");
             localStorage.removeItem("diet");
+            localStorage.removeItem("personal-foods");
             state.tokenAccess = "";
             state.tokenRefresh = "";
         },
@@ -109,6 +110,7 @@ export default{
             localStorage.removeItem("program");
             localStorage.removeItem("schedule");
             localStorage.removeItem("diet");
+            localStorage.removeItem("personal-foods");
             state.tokenAccess = "";
             state.tokenRefresh = "";
         },

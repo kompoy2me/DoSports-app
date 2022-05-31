@@ -12,7 +12,8 @@
                             class="d-flex align-top" 
                             style="width: 100%; ">
 
-                            <div>{{food.name}} ({{food.amount}}г)</div>
+                            <div v-if="food.amount">{{food.name}} ({{food.amount}}г)</div>
+                            <div v-else>{{food.name}} (100г)</div>
                         </div>
                         <div class="dele">
                             <v-icon 
@@ -33,12 +34,20 @@
                       <th>ГИ</th>
                   </tr>
 
-                  <tr class="t-params ">
+                  <tr v-if="food.amount" class="t-params ">
                       <th>{{(food.proteins * (food.amount/100)).toFixed(1)}}</th>
                       <th>{{(food.fats * (food.amount/100)).toFixed(1)}}</th>
                       <th>{{(food.carbohydrates * (food.amount/100)).toFixed(1)}}</th>
                       <th>{{(food.calories * (food.amount/100)).toFixed(1)}}</th>
                       <th>{{(food.fibers * (food.amount/100)).toFixed(1)}}</th>
+                      <th>{{food.glycemic_index}}</th>
+                  </tr>
+                  <tr v-else class="t-params ">
+                      <th>{{food.proteins}}</th>
+                      <th>{{food.fats}}</th>
+                      <th>{{food.carbohydrates}}</th>
+                      <th>{{food.calories}}</th>
+                      <th>{{food.fibers}}</th>
                       <th>{{food.glycemic_index}}</th>
                   </tr>
               
@@ -59,7 +68,17 @@ export default {
         clickDel(id) {
             this.$emit('del-food', id);
         },
+    },
+    computed: {
+    },
+
+    created() {
+        /*if (!this.food.amount) {
+            this.food.amount = 100;
+        }*/
+
     }
+    
 }
 
 </script>

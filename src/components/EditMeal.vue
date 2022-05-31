@@ -46,6 +46,8 @@
                     </template>
                 </v-simple-table>
 
+                <div style="text-align: center; font-size: 10pt; color:#B5B5B8" class="px-10 py-4">Вы можете отредактировать продукт, нажав на его название</div>
+
                 <div class="mt-4"
                     v-for="food in meal.foods"
                     :key="food.id"

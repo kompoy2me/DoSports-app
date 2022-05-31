@@ -29,10 +29,10 @@
                     ></v-select>
                 </div>
                 <v-btn
-                    
+                    @click="personProdsOn"
                     outlined
                     style="background-color: #363649 !important"
-                    >Мои продукты</v-btn>
+                    >{{userProds}}</v-btn>
             </div>
         </div>
 
@@ -135,13 +135,13 @@ export default {
         checkedProd: {},
         val: 100,
         idCategory: 0,
-
-        selectedCategory: null,
-        selectedCategoryId: 0,
-        foodCate: {name:[], id:[]},
+        userProds: 'Мои продукты',
+        
+        allFoods: [],
+        selfFoods: [],
     }),
 	methods: {
-        ...mapActions(["showFoods", "updateDietSchedule", "showFoodCategories"]),
+        ...mapActions(["showFoods", "updateDietSchedule", "showFoodCategories", "showPersonalFoods"]),
 
         checkItem(food) {
             this.overlay = true;
@@ -158,10 +158,31 @@ export default {
         },
         backToEdit() {
             this.$emit('back');
+        },
+
+        async getPersonalFoods() {
+            if (navigator.connection.type != "none") {
+                let id = JSON.parse(localStorage.getItem('user')).id;
+                this.showPersonalFoods(id).then(() => {
+                    localStorage.setItem('personal-foods', JSON.stringify(this.personalFoods));
+                }) 
+            }   
+        },
+
+        personProdsOn() {
+            if (this.userProds === 'Мои продукты') {
+                this.foods = this.personalFoods;
+                this.userProds = 'Все продукты';
+            }
+            else {
+                this.foods = this.getFoods;
+                this.userProds = 'Мои продукты';
+            }
+            
         }
     },
     computed: {
-        ...mapGetters(["getFoods", "currDate", "currMeal", "foodCategories"]),
+        ...mapGetters(["getFoods", "currDate", "currMeal", "foodCategories", "personalFoods"]),
 
         foodCats() {
             if (this.foodCategories) {
@@ -186,12 +207,14 @@ export default {
             }
             return foods;
         },
+        
     },
     mounted() {
         this.showFoods().then(()=>{
             this.foods = this.getFoods;
         });
         this.showFoodCategories();
+        this.getPersonalFoods();
         
     }
 }

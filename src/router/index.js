@@ -76,6 +76,11 @@ const routes = [
 				props: true,
 				component: () => import('@/pages/SearchProdPage')
 			},
+			{
+				path: '/personal-food',
+				name: 'personal-food',
+				component: () => import('@/pages/PersonalFoodPage')
+			},
 
 		]
 	},

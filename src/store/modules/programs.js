@@ -18,6 +18,7 @@ export default {
         currMeal: null,
         currDate: null,
         programPersonalFoods: [],
+        programRations: [],
     },
 
     actions: {
@@ -152,6 +153,54 @@ export default {
                 localStorage.setItem('schedule', JSON.stringify(schedule));
                 console.log('new diet in schedule ', JSON.parse(localStorage.getItem('schedule'))[date.week].days[date.day].diet);
             }); 
+        },
+
+        async showRations(ctx, id) {
+            let calcParams = (ratio, grams) => {
+                let value = ratio * grams / 100;
+                return (+value.toFixed(1));
+            }
+
+            let round = (value) => {
+                return (+value.toFixed(1));
+            }
+
+            await axios.get(`${url}/api/programs/get-users-rations/${id}`).then(async (resRations) => {
+                let rations = Array.from(resRations.data);
+                for (let i = 0; i < rations.length; i++) {
+                    await axios.get(`${url}/api/programs/get-ration-foods/${rations[i].id}`).then(async (resFoods) => {
+                        rations[i].foods = resFoods.data;
+                        // свойства на прием пищи
+                        rations[i].proteins = 0;
+                        rations[i].fats = 0;
+                        rations[i].carbohydrates = 0;
+                        rations[i].calories = 0;
+                        rations[i].fibers = 0;
+
+                        for (let j = 0; j < rations[i].foods.length; j++) {
+                            // относительные свойства, зависящие от граммовки
+                            rations[i].foods[j].proteinsCalc = calcParams(rations[i].foods[j].proteins, rations[i].foods[j].amount);
+                            rations[i].foods[j].fatsCalc = calcParams(rations[i].foods[j].fats, rations[i].foods[j].amount);
+                            rations[i].foods[j].carbohydratesCalc = calcParams(rations[i].foods[j].carbohydrates, rations[i].foods[j].amount);
+                            rations[i].foods[j].caloriesCalc = calcParams(rations[i].foods[j].calories, rations[i].foods[j].amount);
+                            rations[i].foods[j].fibersCalc = calcParams(rations[i].foods[j].fibers, rations[i].foods[j].amount);
+
+                            rations[i].proteins += rations[i].foods[j].proteinsCalc;
+                            rations[i].fats += rations[i].foods[j].fatsCalc;
+                            rations[i].carbohydrates += rations[i].foods[j].carbohydratesCalc;
+                            rations[i].calories += rations[i].foods[j].caloriesCalc;
+                            rations[i].fibers += rations[i].foods[j].fibersCalc;
+                        }
+                        rations[i].proteins = round(rations[i].proteins);
+                        rations[i].fats = round(rations[i].fats);
+                        rations[i].carbohydrates = round(rations[i].carbohydrates);
+                        rations[i].calories = round(rations[i].calories);
+                        rations[i].fibers = round(rations[i].fibers);
+                    });
+                }
+                
+                ctx.commit("updateRations", rations);
+            });
         },
 
         async setCurrentWeek(ctx, week) {
@@ -300,6 +349,12 @@ export default {
         updatePersonalFoods(state, foods) {
             state.programPersonalFoods = foods;
         },
+
+        updateRations(state, rations) {
+            console.log('rations updated! ', JSON.stringify(rations));
+            localStorage.setItem('rations', JSON.stringify(rations))
+            state.programRations = rations;
+        },
     },
 
     getters: {
@@ -353,6 +408,10 @@ export default {
 
         personalFoods(state) {
             return state.programPersonalFoods;
+        },
+
+        rations(state) {
+            return state.programRations;
         },
     }
 }

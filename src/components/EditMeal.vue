@@ -2,14 +2,17 @@
     <div >
 
         <div class="main-edit-meal" v-if="pageStatus === 'meal' && meal" >
-            <div class="pt-4 meal-edit-head">
-                <div style="width:100%;" class="px-4">
-                    <v-icon class="mb-4"
+            <div class="pt-6 meal-edit-head">
+                <div class="px-4">
+                    <div>
+                         <img 
+                         class="ml-2"
+                        :width=54
                         @click="$router.push({ name: 'diary'}).catch(err => {})"
-                    >
-                        mdi-arrow-left
-                    </v-icon>
-                    <h2 class="d-flex justify-center">
+                        :src="require('@/assets/img/png/arrow-back--white1.png')">
+                    </div>
+                   
+                    <h2 class="d-flex justify-center mt-4">
                         {{meal.time}}
                     </h2>
                 </div>
@@ -45,22 +48,43 @@
                         </tbody>
                     </template>
                 </v-simple-table>
-
-                <div style="text-align: center; font-size: 10pt; color:#B5B5B8" class="px-10 py-4">Вы можете отредактировать продукт, нажав на его название</div>
-
-                <div class="mt-4"
-                    v-for="food in meal.foods"
-                    :key="food.id"
-                >   
-                    <prod-table
-                        @edit-food="openFood" 
-                        @del-food="deleteFood"
-                        :food="food"></prod-table>
+                
+                <div v-if="meal.foods && meal.foods.length === 0">
+                <div style="text-align: center; font-size: 10pt; color:#B5B5B8" class="px-10 py-8">Вы еще не добавляли продукты в этот прием пищи</div>
+                    <div class="d-flex justify-space-between align-center mx-4">
+                        <v-btn
+                            @click="addMeal"
+                        >Добавить</v-btn>
+                        <v-btn
+                            outlined
+                            style="background-color: #090914 !important"
+                            @click="addNewRation"
+                        >Добавить рацион</v-btn>
+                    </div>
                 </div>
-                <v-btn
-                    @click="addMeal"
-                    class="ml-4 mb-8"
-                >Добавить</v-btn>
+
+                <div v-else >
+                    <div style="text-align: center; font-size: 10pt; color:#B5B5B8" class="px-10 py-4">Вы можете отредактировать продукт, нажав на его название</div>
+                    <div class="mt-4"
+                        v-for="food in meal.foods"
+                        :key="food.id"
+                    >   
+                        <prod-table
+                            @edit-food="openFood" 
+                            @del-food="deleteFood"
+                            :food="food"></prod-table>
+                    </div>
+                    <div class="d-flex justify-space-between align-center mx-4 my-8">
+                        <v-btn
+                            @click="addMeal"
+                        >Добавить</v-btn>
+                        <v-btn
+                            outlined
+                            style="background-color: #090914 !important"
+                            @click="createNewRation"
+                        >Создать рацион</v-btn>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -81,12 +105,37 @@
             ></v-progress-circular>
         </div>
 
+        <div v-if="pageStatus === 'ration-add'" class="mx-4">
+            <div class="d-flex align-center">
+                <img
+                    class="my-8 ml-2" 
+                    :width=54
+                    @click="pageStatus = 'meal'"
+                    :src="require('@/assets/img/png/arrow-back--white1.png')">
+            </div>
+            <div v-if="personRations.length === 0">
+                <div>У вас еще нет созданных рационов. Создать рацион можно после формирования приема пищи.</div>
+            </div>
+            <div  v-else>
+                <div class="my-3" v-for="ration in personRations"
+                    :key="ration.id"
+                >
+                    <ration-tab 
+                        :ration="ration" 
+                        :edit="false" 
+                        @add-ration="addRationToMeal"
+                    ></ration-tab>
+                </div>
+            </div>
+            
+        </div>
+
         <v-overlay
             :color="'#000'"
             opacity=0.8
             v-model="over"
         >
-            <v-card
+            <v-card v-if="overlayStatus === 'edit'"
                     width="80vw"
                     class="px-5 py-6 mt-10"
                     style="background-color: #1A1A27"
@@ -148,7 +197,45 @@
                             >Сохранить</v-btn>
                     </div>
                 </v-card>
+
+            <v-card v-if="overlayStatus === 'ration-create'"
+                width="90vw"
+                class="pa-4"
+            >
+                <div class="headline-self-prod">Создание рациона</div>
+                <v-form ref="form" lazy-validation>
+                    <div class="my-4">
+                        <label>Название рациона</label>
+                        <v-text-field
+                            v-model="ration.name"
+                            :rules="rules.name"
+                            hide-details="auto"
+                            outlined
+                            require
+                        ></v-text-field>
+                    </div>
+                    
+                    <div class="d-flex justify-space-between align-center">
+                        <v-btn
+                            style="font-size:11pt; width:40%; background-color: #363649 !important"
+                            @click="cancelRation"
+                        >
+                            Отменить</v-btn>
+                        <v-btn
+                            style="width:56%; background-color: #004BD7 !important"
+                            @click="createRation"
+                        >Создать</v-btn> 
+                    </div>
+                </v-form>               
+                    
+            </v-card>
         </v-overlay>
+
+        <v-dialog
+            v-model="dialog"
+        >
+            <alert-message :msg='msg' @clicked="dialog = false"></alert-message>
+        </v-dialog>
             
     </div>
 </template>    
@@ -157,24 +244,36 @@
 /*eslint-disable*/
 import axios from "axios";
 import url from "@/services/url";
-import { mapGetters, mapActions } from 'vuex'
-import ProdTable from './ProdTable.vue'
-import ProductList from './ProductList.vue'
+import { mapGetters, mapActions } from 'vuex';
+import ProdTable from './ProdTable.vue';
+import ProductList from './ProductList.vue';
+import RationTab from "./RationTab.vue";
+import AlertMessage from "./AlertMessage.vue";
 export default {
-    components: {ProdTable, ProductList},
+    components: {ProdTable, ProductList, RationTab, AlertMessage},
 
     data: () => ({
+        ration: {
+            name: "",
+            foods: [],
+            idUser: 0,
+        },
         meal: {},
+        msg: {title: 'Рацион успешно создан!', text: 'Для просмотра и редактирования рациона перейдите в пункт меню “Мои рационы”.'},
         pageStatus: 'load',
-        mealsLoad: false,
-        overlay: false,
-        search: false,
+        overlayStatus: 'edit',
         currentDate: {},
         mealIndex: null,
-        show: false,
         over: false,
+        dialog: false,
         value: 100,
         editFood: {},
+        personRations: [],
+        rules: {
+            name: [
+                v => !!v || "Введите название"
+            ]
+        },
     }),
 
     computed: {
@@ -185,25 +284,34 @@ export default {
 
     },
     methods: {
-        ...mapActions(["updateDietSchedule"]),
+        ...mapActions(["updateDietSchedule","showRations"]),
 
         addMeal() {
             this.pageStatus = 'search';
         },
 
         async addFood(id, val) {
-            this.pageStatus = 'load';
-            let food = {
-                idFood: id,
-                amount: val,
-                idMeal: this.meal.id,
-            };
-            console.log('DATA to add', JSON.stringify(food))
-            await axios.post(`${url}/api/programs/add-meal-food`, food).then((res) => {
-                if (res.data.name === "Success") {
-                    this.updateDiet();
-                }
-            })
+            if (navigator.connection.type != "none") {
+                this.pageStatus = 'load';
+                let food = {
+                    idFood: id,
+                    amount: val,
+                    idMeal: this.meal.id,
+                };
+                console.log('DATA to add', JSON.stringify(food))
+                await axios.post(`${url}/api/programs/add-meal-food`, food).then((res) => {
+                    if (res.data.name === "Success") {
+                        this.updateDiet();
+                    }
+                })
+            }
+            
+        },
+
+        cancelRation() {
+            this.over=false; 
+            this.overlayStatus = 'edit'; 
+            this.ration.name = '';
         },
 
         openFood(food) {
@@ -211,35 +319,65 @@ export default {
             this.editFood = food;
             this.value = food.amount;
             this.over = true;
-            
         },
 
         async changeFood() {
-            this.pageStatus = 'load';
-            this.over = false;
-            let food = {
-                id: this.editFood.id,
-                amount: this.value,
-            };
-            console.log(JSON.stringify(food))
-            await axios.post(`${url}/api/programs/update-amount-food`, food).then((res) => {
-                if (res.data.name === "Success") {
-                   this.updateDiet();
-                   
-                }
-            })
+            if (navigator.connection.type != "none") {
+                this.pageStatus = 'load';
+                this.over = false;
+                let food = {
+                    id: this.editFood.id,
+                    amount: this.value,
+                };
+                console.log(JSON.stringify(food))
+                await axios.post(`${url}/api/programs/update-amount-food`, food).then((res) => {
+                    if (res.data.name === "Success") {
+                        this.updateDiet();
+                    }
+                })
+            }
+            
         },
 
         async deleteFood(id) {
-            this.pageStatus = 'load';
-            let food = {
-                id: id
-            }
-            await axios.post(`${url}/api/programs/delete-meal-food`, food).then((res) => {
-                if (res.data.name === "Success") {
-                    this.updateDiet();
+            if (navigator.connection.type != "none") {
+                this.pageStatus = 'load';
+                let food = {
+                    id: id
                 }
-            });
+                await axios.post(`${url}/api/programs/delete-meal-food`, food).then((res) => {
+                    if (res.data.name === "Success") {
+                        this.updateDiet();
+                    }
+                });
+            }
+            
+        },
+
+        createNewRation() {
+            this.overlayStatus = 'ration-create';
+            this.over = true;
+        },
+
+        async createRation() {
+            if (navigator.connection.type != "none") {
+                if (this.$refs.form.validate()) {
+                    this.over = false;
+                    this.pageStatus = 'load';
+
+                    this.ration.foods = this.meal.foods;
+                    this.ration.idUser = JSON.parse(localStorage.getItem('user')).id;
+                    console.log(JSON.stringify(this.ration));
+                    await axios.post(`${url}/api/programs/add-ration`, this.ration).then((res) => {
+                        if (res.data.name === "Success") {
+                            this.updateDiet();
+                            this.ration.name = '';
+                            this.dialog = true;
+                            
+                        }
+                    });
+                }
+            }
         },
 
         async updateDiet() {
@@ -258,7 +396,6 @@ export default {
         getMealId() {
             this.currentDate = this.currDate;
             this.meal = this.currMeal;
-
             let schedule = JSON.parse(localStorage.getItem('schedule'));
             let meal = schedule[this.currentDate.week].days[this.currentDate.day].diet;        
             for (let i = 0; i<meal.length; i++) {
@@ -267,12 +404,49 @@ export default {
                     break
                 }
             }
-        }
+        },
+
+        async getPersonRations() {
+            if (navigator.connection.type != "none") {
+                this.pageStatus = 'load';
+                let id = JSON.parse(localStorage.getItem('user')).id;
+                await this.showRations(id).then(async () => {
+                    this.personRations = JSON.parse( localStorage.getItem('rations'));
+                });
+            }
+        },
+
+        async addNewRation() {
+            this.over = false;
+            await this.getPersonRations().then(() => {
+                this.pageStatus = 'ration-add'; 
+            }) 
+        },
+
+        async addRationToMeal(ration) {
+            if (navigator.connection.type != "none") {
+                this.pageStatus = 'load'
+                let inputRation = {
+                    idMeal: this.meal.id,
+                    foods: ration.foods,
+                }
+                console.log(JSON.stringify(inputRation))
+                await axios.post(`${url}/api/programs/add-ration-to-meal`, inputRation).then((res) => {
+                    if (res.data.name === "Success") {
+                        this.updateDiet();
+                    }
+                })
+        
+            }
+            
+        },
     },
 
     mounted() {
+        
         this.getMealId();
         this.initFoods();
+        
     }
     
 }
@@ -299,4 +473,8 @@ export default {
     text-align: center;
     margin-top: 40vh;
 }
+.headline-self-prod {
+    font-size: 18pt;
+}
+
 </style>

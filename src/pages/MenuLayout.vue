@@ -1,7 +1,7 @@
 <template>
     <v-card
       :style="{background: $vuetify.theme.themes['dark'].background}"
-      class=" overflow-hidden"
+      class="main-layout overflow-hidden"
       height="100%"
     >
     <div style="height:100vh; overflow: auto; ">
@@ -22,18 +22,29 @@
 
       <v-navigation-drawer
         style="z-index: 100;"
+        
         v-model="drawer"
         color="#1A1A27"
+        overlay-color="#000"
         absolute
         temporary
       >
-        <v-list-item @click="$router.push({ name: 'user'}).catch(err => {})" class="pt-10 px-2">
-          <v-list-item-avatar >
-            <v-img 
-              src="@/assets/img/svg/user-violet.svg"
-            ></v-img>
-          </v-list-item-avatar>
-          <v-list-item-title>{{user.fullname}}</v-list-item-title>
+        <v-list-item
+          class="user-avatar pa-6 pt-10"
+          @click="$router.push({ name: 'user'}).catch(err => {})" >
+          <div class="flex-column ">
+            <v-avatar 
+              size="70"
+              color="#1A1A27"
+              class="my-2">
+              <!--<img
+                src="@/assets/img/png/empty-image_light.png"
+              >-->
+            </v-avatar>
+            <div >{{user.fullname}}</div>
+          </div>
+          
+          
         </v-list-item>
         <v-list
           nav
@@ -41,46 +52,49 @@
         >
           <v-list-item-group
             v-model="group"
+            class="px-2"
             
           >
             <v-list-item
-                @click="$router.push({ name: 'main'}).catch(err => {})"
+              class="my-3"
+              @click="$router.push({ name: 'main'}).catch(err => {})"
             >
-                <v-list-item-icon>
-                    <v-icon>mdi-home</v-icon>
-                </v-list-item-icon>
+                    <v-icon class="mr-6">mdi-home-variant-outline</v-icon>
                 <v-list-item-title>Главная</v-list-item-title>
             </v-list-item>
             <v-list-item
-                @click="$router.push({ name: 'sport'}).catch(err => {})"
+              class="my-3"
+              @click="$router.push({ name: 'sport'}).catch(err => {})"
             >
-                <v-list-item-icon>
-                    <v-icon>mdi-home</v-icon>
-                </v-list-item-icon>
+                  <v-icon class="mr-6">mdi-chart-line</v-icon>
                 <v-list-item-title>Основная информация</v-list-item-title>
             </v-list-item>
             <v-list-item
-                @click="$router.push({ name: 'diary'}).catch(err => {})"
+              class="my-3"
+              @click="$router.push({ name: 'diary'}).catch(err => {})"
             >
-                <v-list-item-icon>
-                    <v-icon>mdi-home</v-icon>
-                </v-list-item-icon>
+                    <v-icon class="mr-6">mdi-silverware</v-icon>
                 <v-list-item-title>Приемы пищи</v-list-item-title>
             </v-list-item>
             <v-list-item
-                @click="$router.push({ name: 'personal-food'}).catch(err => {})"
+              class="my-3"
+              @click="$router.push({ name: 'personal-food'}).catch(err => {})"
             >
-                <v-list-item-icon>
-                    <v-icon>mdi-home</v-icon>
-                </v-list-item-icon>
+                    <v-icon class="mr-6">mdi-food-apple-outline</v-icon>
                 <v-list-item-title>Мои продукты</v-list-item-title>
             </v-list-item>
             <v-list-item
-                @click="$router.push({ name: 'atlas'}).catch(err => {})"
+              class="my-3"
+              @click="$router.push({ name: 'rations'}).catch(err => {})"
             >
-                <v-list-item-icon>
-                    <v-icon>mdi-home</v-icon>
-                </v-list-item-icon>
+                    <v-icon class="mr-6">mdi-bowl-mix-outline</v-icon>
+                <v-list-item-title>Мои рационы</v-list-item-title>
+            </v-list-item>
+            <v-list-item
+              class="my-3"
+              @click="$router.push({ name: 'atlas'}).catch(err => {})"
+            >
+                    <v-icon class="mr-6">mdi-home</v-icon>
                 <v-list-item-title>Атлас тела</v-list-item-title>
             </v-list-item>
             
@@ -103,6 +117,20 @@ export default {
 }
 </script>
 	
-<style>
+<style lang="scss">
+@import "../assets/main.css";
+@import "../assets/forms.scss";
 
+.main-layout {
+  
+    font-family: "Inter-Regular", sans-serif;
+}
+.user-avatar {
+  background-color: #090914;
+
+}
+.v-list-item-group .v-list-item--active{
+  background-color: #1A1A27;
+  color: #9196FF !important;
+}
 </style>

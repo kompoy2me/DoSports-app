@@ -81,6 +81,11 @@ const routes = [
 				name: 'personal-food',
 				component: () => import('@/pages/PersonalFoodPage')
 			},
+			{
+				path: '/rations',
+				name: 'rations',
+				component: () => import('@/pages/PersonalRationPage')
+			},
 
 		]
 	},

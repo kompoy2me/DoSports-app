@@ -1,13 +1,18 @@
 <template>
     <div class="search-main">
 
-        <div class="pa-4 ma-0 search-head">
-            <v-icon class="mb-4"
+        <div class="pa-4 search-head">
+            <img
+                class="my-2  ml-2" 
+                :width=54
+                @click="backToEdit"
+                :src="require('@/assets/img/png/arrow-back--white1.png')">
+            <!--<v-icon class="mb-4"
                 @click="backToEdit"
             >
                 mdi-arrow-left
             </v-icon>
-            <!--Поиск продукта-->
+            Поиск продукта-->
             <v-text-field
                 class="my-4"
                 v-model="foodName"

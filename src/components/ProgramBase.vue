@@ -163,7 +163,6 @@ export default {
 
         formatDate(date) {
             if (date) {
-                console.log('DATE', date);
                 let d = new Date(date);
                 let day = d.getDate();
                 let month = d.getMonth() + 1;

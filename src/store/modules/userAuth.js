@@ -83,9 +83,10 @@ export default{
         updateMessage(state, message) {
             state.msgAuth = message;
         },
-        async updateUser(state, user) {
+        updateUser(state, user) {
+            localStorage.setItem("user", JSON.stringify(user));
             state.user = user;
-            console.log("user updated", state.user)
+            console.log("user updated", state.user);
         },
         setUnauthorized(state) {
             state.user = null;

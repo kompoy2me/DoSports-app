@@ -1,26 +1,27 @@
 <template>
     <div>
         <div>
-            <v-icon class="mb-10"
+            <img
+                class="mt-8" 
+                :width=54
                 @click="$router.push({ name: 'start'}).catch(err => {})"
-            >
-                mdi-arrow-left
-            </v-icon>
+                :src="require('@/assets/img/png/arrow-back--white1.png')">
         </div>
         <p
-            class="headline"
+            class="mt-1 mb-10 headline"
         >Авторизация</p>
 
         <v-form ref="form">
 
             <label>Email или логин</label>
-            <v-text-field class="uu"
+            <v-text-field
                 v-model="user.login"
                 :rules="rules.login"
                 hide-details="auto"
                 required
                 outlined
                 color="#9196FF"
+                class="mb-3"
             ></v-text-field>
 
             <label>Пароль</label>
@@ -34,11 +35,13 @@
                 required
                 outlined
                 color="#9196FF"
+                class="mb-6"
 			></v-text-field>
             <v-btn
                 color="primary"
                 @click="authUser"
                 large
+                :loading="logProgress"
             >
                 Войти
             </v-btn>
@@ -55,6 +58,7 @@ export default {
             login: "",
             password: ""
         },
+        logProgress: false,
         rules: {
             login: [
                 v => !!v || "Введите логин",
@@ -74,6 +78,7 @@ export default {
         ...mapActions(["checkActiveProgram","authRequest", "checkAccess", "showProgram", "initSchedule"]),
 
         async authUser() {
+            this.logProgress = true;
             if (this.$refs.form.validate()) {
                 this.authRequest(this.user).then( () => { 
                     if (localStorage.getItem("user-auth")) {

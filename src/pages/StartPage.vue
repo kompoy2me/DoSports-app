@@ -67,7 +67,7 @@
 import {mapActions, mapGetters} from "vuex";
 export default {
 	data: () => ({
-			ref: null,
+			ref: {},
 			token: "",
 	}),
 	
@@ -79,16 +79,7 @@ export default {
     methods: {
 		...mapActions(["checkUserVk", "checkUserVkInDb","checkActiveProgram","authRequest", "checkAccess", "showProgram", "initSchedule"]),
 
-		loadstartCallback(event) {
-            console.log('Loading started: '  + event.url);
-            if (event.url.includes('registration-vk')) {
-				this.ref.hide();
-                let urlSplitted = event.url.split('/');
-                this.token = urlSplitted[urlSplitted.length-1];
-                this.ref.close();
-				this.authUser();
-            }
-        },
+
 		
 		authUser() {
 			this.checkUserVk(this.token).then(() => {
@@ -152,16 +143,35 @@ export default {
             this.ref.addEventListener('loadstart', (event)=>{
                 this.loadstartCallback(event)
             });
+			this.ref.addEventListener('loaderror', (event)=>{
+                this.loaderrorCallback(event)
+            });
 			this.ref.addEventListener('loadstop', loadstopCallback);
-			this.ref.addEventListener('loaderror', loaderrorCallback);
 			function loadstopCallback(event) {
 				console.log('Loading finished: ' + event.url)
 			}
-			function loaderrorCallback(error) {
+		},
+
+		loaderrorCallback() {
+			console.log('Loading error: ' + error.message);
+			this.ref.close();
+		},
+
+		loadstartCallback(event) {
+			console.log('REF ',JSON.stringify(this.ref));
+            console.log('Loading started: '  + event.url);
+            if (event.url.includes('registration-vk')) {
 				this.ref.hide();
-				console.log('Loading error: ' + error.message);
-			}
-		}
+                let urlSplitted = event.url.split('/');
+                this.token = urlSplitted[urlSplitted.length-1];
+                this.ref.close();
+				this.authUser();
+            }
+			if (event.url.includes('description=User+denied+your+request')) {
+				this.ref.hide();
+            }
+        
+		},
 	},
 	computed: {
         ...mapGetters(["getUserVkData", "getMatchVK","activeProgramStatus","getMessage", "getUser", "programData"]),

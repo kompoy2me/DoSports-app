@@ -1,42 +1,27 @@
 <template>
 	<div>
-		<v-form ref="form" lazy-validation>
+		<v-form ref="form" lazy-validation 
+        class="px-4">
             <img
                 class="mt-8 mb-2" 
                 :width=54
-                @click="$router.push({ name: 'start'}).catch(err => {})"
+                @click="$router.push({ name: 'user'}).catch(err => {})"
                 :src="require('@/assets/img/png/arrow-back--white1.png')">
-            <p
-				class="mt-1 mb-10 headline"
-			>Регистрация</p>
+            <div
+                style="font-size:16pt"
+				class="mt-1 mb-10"
+			>Личная информация</div>
 
             <label>ФИО</label>
 			<v-text-field
                 class="mb-4"
-                v-model="newUser.fullname"
+                v-model="user.fullname"
                 color="#9196FF"
                 :rules="rules.fullname"
                 hide-details="auto"
                 required
                 outlined
 			></v-text-field>
-
-			<label>Пол</label>
-			<v-radio-group
-                class="mt-0 mb-4"
-                hide-details="auto"
-                v-model="newUser.gender"
-                row
-            >
-				<v-radio
-					label="Мужской"
-					value="m"
-				></v-radio>
-				<v-radio
-					label="Женский"
-					value="f"
-				></v-radio>
-			</v-radio-group>
             
             <label>Дата рождения</label>
             <v-menu
@@ -47,7 +32,6 @@
                 offset-y
                 min-width="90%"
                 :color="'#FFF'"
-                
                 >
                 <template v-slot:activator="{ on, attrs }">
                     <v-text-field
@@ -77,7 +61,7 @@
 
             <label>Регион проживания</label>
             <v-select
-                v-model="newUser.id_region"
+                v-model="user.id_region"
                 hide-details="auto"
                 :items="this.getRegions"
                 :item-text="item => `${item.name} (UTC +${item.time})`"
@@ -88,20 +72,9 @@
                 color="#9196FF"
             ></v-select>
 
-            <label>Логин</label>
-            <v-text-field
-                :rules="rules.login"
-                v-model="newUser.login"
-                hide-details="auto"
-                required
-                outlined
-                class="mb-4"
-                color="#9196FF"
-			></v-text-field>
-
             <label>Email</label>
             <v-text-field
-                v-model="newUser.email"
+                v-model="user.email"
                 :rules="rules.email"
                 hide-details="auto"
                 required
@@ -109,41 +82,20 @@
                 class="mb-4"
                 color="#9196FF"
 			></v-text-field>
-
-            <label>Пароль</label>
-            <v-text-field
-                v-model="newUser.password"
-                :append-icon="showPass ? 'mdi-eye' : 'mdi-eye-off'"
-                :type="showPass ? 'text' : 'password'"
-                @click:append="showPass = !showPass"
-                :rules="rules.password"
-                hide-details="auto"
-                required
-                outlined
-                class="mb-8"
-                color="#9196FF"
-			></v-text-field>
-
-            <v-checkbox
-                    label="Нажимая кнопку “Зарегистрироваться”, вы даете согласие на обработку персональных данных"
-                    :rules="rules.checkbox"
-                    required
-                    hide-details="auto"
-                ></v-checkbox>
                 
             <v-btn
-                @click="addUser"
                 color="primary"
                 large
                 block
                 class="my-8"
-                :loading="this.regProgress"
-            >Зарегистрироваться
+                @click="changePersonalData"
+                :loading="this.editProgress"
+            >Сохранить
             </v-btn>
 		</v-form>
 		<v-dialog
             v-model="dialog">
-            <alert-message :msg="msg" @clicked="dialog = false; $router.push({ name: 'authorization'})"></alert-message>
+            <alert-message :msg="msg" @clicked="dialog = false"></alert-message>
         </v-dialog>
 	</div>
 </template>
@@ -156,18 +108,16 @@ import {mapActions, mapGetters} from "vuex";
 export default {
     components: {AlertMessage},
 	data: () => ({
-        newUser: {
+        user: {
+            id: 0,
             fullname: "",
-            gender: "m",
             birthday: null,
-            id_region: 1,
             email: "",
-            login: "",
-            password: "",
+            id_region: 1,
         },
         dateFormatted: "",
         showPass: false,
-        regProgress: false,
+        editProgress: false,
         dialog: false,
         msg: {},
 
@@ -182,16 +132,7 @@ export default {
                 v => !!v || "Введите дату рождения",
             ],
             email: [],
-            login: [],
-            checkbox: [
-                v => !!v
-            ],
-            password: [
-                v => /^[^'"`]+$/.test(v) || "Некорректный пароль",
-                v => v.length >= 7 || "Пароль должен состоять как минимум из 7 символов",
-            ],
         },
-
         activePicker: null,
         date: null,
         menu: false,
@@ -205,7 +146,7 @@ export default {
         ...mapGetters(["getRegions", "getLogins", "getEmails"])
     },
     methods: {
-        ...mapActions(["getRegionList", "getLoginList", "getEmailList"]),
+        ...mapActions(["getRegionList", "getLoginList", "getEmailList", "checkAccess"]),
 
         parseDate(date) {
             if (!date) return null;
@@ -215,7 +156,7 @@ export default {
 
         save (date) {
             this.$refs.menu.save(date);
-            this.newUser.birthday = date;
+            this.user.birthday = date;
         },
 
         updateRules() {
@@ -227,48 +168,45 @@ export default {
             this.rules.email = [
                 v => !!v || 'Введите email',
                 v => /.+@.+/.test(v) || 'Некорректный email',
-                v => !this.getEmails.find(obj => obj.email === v) || 'Данный email уже существует'
-            ];
-            this.rules.login = [
-                v => !!v || 'Введите логин',
-                v => /^[_.\w]+$/.test(v) || 'Некорректный логин',
-                v => v.length <= 20 || 'Логин должен состоять не более чем из 20 символов',
-                v => !this.getLogins.find(obj => obj.login === v) || 'Данный логин уже существует'
+                v => !this.getEmails.find(obj => obj.email === v) || v === JSON.parse(localStorage.getItem("user")).email || 'Данный email уже существует'
             ];
         },
 
-        addUser() {
+        async changePersonalData() {
             if (this.$refs.form.validate()) {
-                this.regProgress = true;
-                this.createUser(this.newUser);
+                this.editProgress = true;
+                await axios.post(`${url}/api/users/change-personal-data`, this.user).then((res) => {
+                    if (res.data.name === "Success") {
+                        this.updateUser().then(() => {
+                            this.msg = {title: 'Информация обновлена!', text: ``}
+                            this.dialog = true;
+                        })
+                    }
+                });
             }
         },
 
-        regUser() {
-            console.log(this.newUser.fullname,
-            this.newUser.gender,
-            this.newUser.birthday,
-            this.newUser.id_region,
-            this.newUser.email,
-            this.newUser.login,
-            this.newUser.password)
+        async updateUser() {
+            await this.checkAccess().then(()=> {
+                this.user = JSON.parse(localStorage.getItem("user"));
+                this.editProgress = false;
+            })
         },
 
-        async createUser(newUser) {
-            await axios.post(`${url}/api/users/add-user-mobile`, newUser).then((res) => {
-                if (res.data.name === "Success") {
-                    //alert(res.data.name);
-                    this.msg = {title: 'Регистрация успешна!', text: `Для продолжения войдите в свой аккаунт`};
-                    this.dialog = true;
-                }
-            });
+        initializeUser() {
+            this.user = JSON.parse(localStorage.getItem("user"));
+            this.date = this.user.birthday;
+            this.updateRules();
         },
+
     },
     mounted() {
         this.getRegionList();
         this.getLoginList();
         this.getEmailList();
-        this.updateRules();
+        this.initializeUser();
+       
+        
     }
 }
 </script>
@@ -280,7 +218,7 @@ label {
     font-size: 14px;
 }
 
-.v-input--checkbox .v-label {
+  .v-input--checkbox .v-label {
     font-size: 10pt;
 }
 

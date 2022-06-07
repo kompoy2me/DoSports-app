@@ -29,6 +29,7 @@
         absolute
         temporary
       >
+        <v-list-item-group>
         <v-list-item
           class="user-avatar pa-6 pt-10"
           @click="$router.push({ name: 'user'}).catch(err => {})" >
@@ -37,15 +38,11 @@
               size="70"
               color="#1A1A27"
               class="my-2">
-              <!--<img
-                src="@/assets/img/png/empty-image_light.png"
-              >-->
             </v-avatar>
             <div >{{user.fullname}}</div>
           </div>
-          
-          
         </v-list-item>
+        </v-list-item-group>
         <v-list
           nav
           dense
@@ -55,6 +52,20 @@
             class="px-2"
             
           >
+          <v-list-item v-if="user.pro_last_datetime === null"
+              class="my-3 premium-item"
+              @click="$router.push({ name: 'sub'}).catch(err => {})"
+            >
+                    <v-icon class="mr-6">mdi-card-account-details-star-outline</v-icon>
+                <v-list-item-title>Premium подписка</v-list-item-title>
+            </v-list-item>
+            <v-list-item v-else
+              class="my-3"
+              @click="$router.push({ name: 'sub'}).catch(err => {})"
+            >
+                    <v-icon class="mr-6">mdi-home-variant-outline</v-icon>
+                <v-list-item-title>Подписка</v-list-item-title>
+            </v-list-item>
             <v-list-item
               class="my-3"
               @click="$router.push({ name: 'main'}).catch(err => {})"
@@ -105,12 +116,22 @@
 </template>
 
 <script>
+
+import { mapGetters } from 'vuex';
 export default {
     data: () => ({
         drawer: false,
         group: null,
         user: null,
   }),
+  watch: {
+    getUser: function () {
+      this.user = JSON.parse(localStorage.getItem("user"))
+    },
+  },
+  computed: {
+    ...mapGetters(["getUser"]),
+  },
   created() {
     this.user = JSON.parse(localStorage.getItem("user"))
   }
@@ -129,8 +150,12 @@ export default {
   background-color: #090914;
 
 }
+
 .v-list-item-group .v-list-item--active{
   background-color: #1A1A27;
   color: #9196FF !important;
+}
+.premium-item {
+  border: solid #9196FF;
 }
 </style>

@@ -65,6 +65,11 @@ const routes = [
 				component: () => import('@/pages/UserPage')
 			},
 			{
+				path: '/edit-user',
+				name: 'edit-user',
+				component: () => import('@/pages/EditProfilePage')
+			},
+			{
 				path: '/edit-meal',
 				name: 'edit-meal',
 				props: true,
@@ -86,6 +91,12 @@ const routes = [
 				name: 'rations',
 				component: () => import('@/pages/PersonalRationPage')
 			},
+			{
+				path: '/sub',
+				name: 'sub',
+				component: () => import('@/pages/SubscriptionPage')
+			},
+			
 
 		]
 	},

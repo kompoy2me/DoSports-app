@@ -1,0 +1,20 @@
+{
+  "android": {
+      "debug": {
+          "keystore": "./Dosports.jks",
+          "storePassword": "fdwwQ24gx(*",
+          "alias": "dosports",
+          "password" : "hkjg536j9**",
+          "keystoreType": "",
+          "packageType": "apk"
+      },
+      "release": {
+          "keystore": "./Dosports.jks",
+          "storePassword": "fdwwQ24gx(*",
+          "alias": "dosports",
+          "password" : "hkjg536j9**",
+          "keystoreType": "",
+          "packageType": "apk"
+      }
+  }
+}

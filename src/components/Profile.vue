@@ -1,53 +1,52 @@
 <template>
-	<div class="main-user">
-        <div class="user-head">
-            <!--<v-img
-                src="@/assets/img/png/user-head.png"
-                width=auto 
-                height=100%
-            ></v-img>-->
-            <div class="userAvatar">
-                <v-avatar
-                    size="140">
-                    <img src="@/assets/img/png/empty-image.png" alt="img">
-                </v-avatar>
-                <div class="mt-2">{{ user.fullname }}</div>
-                <div class="email">{{ user.email }}</div>
-            </div>
-        </div>
-        <div class="user-body">
-            
-            <v-img
-            class="mt-4"
-                src="@/assets/img/png/banner-premium.png"
-                width=100% 
-                height=auto
-                @click="getPremium"
-            ></v-img>
-            <div class="pa-4">
-                <div class="person-data-block py-4">
-                
-                <div class="mb-2">Подписка: <div class="person-data" >{{ user.pro ? 'премиум' : 'стандарт' }}</div> </div>
-                <div class="mb-2">Дата рождения: <div class="person-data" >{{ user.birthday }}</div> </div>
-                <div class="mb-2">Регион проживания: <div class="person-data" >{{ user.id_region }}</div> </div>
-                <div class="navigation" @click="logOut">Выйти из аккаунта</div>
-            </div>
-            <div class="person-data-block py-4">
-                
-                <div class="bmi mb-2">ИНДЕКС МАССЫ ТЕЛА - {{program.bmi}}</div>
-                <div class="d-flex">
-                    <div class="mr-10 mb-2">Вес: <div class="person-data" >{{ program.weight }}</div></div>
-                    <div>Рост: <div class="person-data" >{{ program.height }}</div></div>
+	<div v-if="this.user">
+        <div class="main-user">
+            <div class="user-head">
+                <div class="userAvatar">
+                    <v-avatar
+                        size="140">
+                        <img src="@/assets/img/png/empty-image.png" alt="img">
+                    </v-avatar>
+                    <div class="mt-2">{{ user.fullname }}</div>
+                    <div class="email">{{ user.email }}</div>
                 </div>
-                <div class="mb-2">Категория: <div class="person-data" >{{weight_category[program.id_weight_category]}}</div> </div>
-                <div class="mb-2">Образ жизни: <div class="person-data" >{{lifestyle[program.id_lifestyle]}}</div> </div>
-                <div class="mb-2">Уровень подготовки: <div class="person-data" >{{train_prepare[program.train_prepare]}}</div> </div>
-                <div class="mb-2">Цель программы: <div class="person-data" >{{aim[program.aim]}}</div> </div>
-                <div  class="navigation mb-2">Редактировать</div>
             </div>
+            <div class="user-body">
+                
+                <v-img v-if="user.pro_last_datetime === null"
+                    class="mt-4"
+                    src="@/assets/img/png/banner-premium.png"
+                    width=100% 
+                    height=auto
+                    @click="$router.push({ name: 'sub'})"
+                ></v-img>
+                <div class="pa-4">
+                    <div class="person-data-block py-4">
+                    
+                    <div class="mb-2" @click="$router.push({ name: 'sub'})">Подписка: <div class="person-data" >{{ user.pro_last_datetime === null ? "стандарт" : `премиум (до ${user.pro_last_datetime})` }}</div> </div>
+                    <div class="mb-2">Дата рождения: <div class="person-data" >{{ user.birthday }}</div> </div>
+                    <div class="mb-2">Регион проживания: <div class="person-data" >{{ user.id_region }}</div> </div>
+                    <div class="navigation" @click="logOut">Выйти из аккаунта</div>
+                </div>
+                <div class="person-data-block py-4">
+                    
+                    <div class="bmi mb-2">ИНДЕКС МАССЫ ТЕЛА - {{program.bmi}}</div>
+                    <div class="d-flex">
+                        <div class="mr-10 mb-2">Вес: <div class="person-data" >{{ program.weight }}</div></div>
+                        <div>Рост: <div class="person-data" >{{ program.height }}</div></div>
+                    </div>
+                    <div class="mb-2">Категория: <div class="person-data" >{{weight_category[program.id_weight_category]}}</div> </div>
+                    <div class="mb-2">Образ жизни: <div class="person-data" >{{lifestyle[program.id_lifestyle]}}</div> </div>
+                    <div class="mb-2">Уровень подготовки: <div class="person-data" >{{train_prepare[program.train_prepare]}}</div> </div>
+                    <div class="mb-2">Цель программы: <div class="person-data" >{{aim[program.aim]}}</div> </div>
+                    <div  class="navigation mb-2"
+                        @click="$router.push({ name: 'edit-user'})"
+                        >Редактировать</div>
+                </div>
+                </div>
+                
             </div>
-            
-        </div>
+        </div>        
     </div>
 </template>
 
@@ -87,26 +86,25 @@ export default {
     }),
     methods: {
         ...mapActions(["getRegionList","unauthorized"]),
-        logOut() {
+
+        async logOut() {
             this.unauthorized().then(() => {
                 this.$router.push({name: "start"})
             })
         },
-        getPremium() {
-            alert('!')
-        }
+
+        initializeUser() {
+            this.user = JSON.parse(localStorage.getItem("user"));
+            this.program = JSON.parse(localStorage.getItem("program"));
+        },
     },
     computed: {
         ...mapGetters(["getRegions"]),
-        
     },
+
     mounted() {
-        this.getRegionList();
+        this.initializeUser()
     },
-    created() {
-        this.user = JSON.parse(localStorage.getItem("user"))
-        this.program = JSON.parse(localStorage.getItem("program"))
-    }
 }
 </script>
 
@@ -141,7 +139,7 @@ export default {
     margin-bottom: 20px;
 }
 .person-data-block {
-    border-top: solid white;
+    border-top: solid white 0.5px;
     font-family: "Inter-Bold", sans-serif;
 }
 .person-data {
@@ -149,7 +147,7 @@ export default {
     font-family: "Inter-Regular", sans-serif;
 }
 .bmi {
-    font-size: 14pt;
+    font-size: 13pt;
 }
 .navigation {
     text-align: right;

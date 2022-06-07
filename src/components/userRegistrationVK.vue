@@ -3,7 +3,7 @@
 		<v-form ref="form" lazy-validation>
 
             <p
-				class="headline"
+				class="mt-6 mb-10 headline"
 			>Введите дополнительные данные</p>
             
             <label>Дата рождения</label>
@@ -23,7 +23,7 @@
                         hide-details="auto"                  
                         v-bind="attrs"
                         readonly
-                        :append-icon="'mdi-chevron-down'"
+                        class="mb-4"
                         v-on="on"
                         required
                         outlined
@@ -49,6 +49,7 @@
                 :item-value="'id'"
                 required
                 outlined
+                class="mb-4"
                 color="#9196FF"
             ></v-select>
 
@@ -59,6 +60,7 @@
                 hide-details="auto"
                 required
                 outlined
+                class="mb-4"
                 color="#9196FF"
 			></v-text-field>
 
@@ -69,6 +71,7 @@
                 hide-details="auto"
                 required
                 outlined
+                class="mb-6"
                 color="#9196FF"
 			></v-text-field>
             <!--
@@ -88,6 +91,7 @@
                     label="Нажимая кнопку “Зарегистрироваться”, вы даете согласие на обработку персональных данных"
                     :rules="rules.checkbox"
                     required
+                    hide-details="auto"
             ></v-checkbox>
                 
             <v-btn
@@ -95,7 +99,7 @@
                 color="primary"
                 large
                 block
-                class="mt-4"
+                class="my-8"
             >Зарегистрироваться
             </v-btn>
 		</v-form>
@@ -226,6 +230,9 @@ export default {
 
 label {
     font-size: 14px;
+}
+.v-input--checkbox .v-label {
+    font-size: 10pt;
 }
 
 </style>

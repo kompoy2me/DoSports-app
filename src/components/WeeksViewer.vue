@@ -83,7 +83,7 @@ export default {
             let schedule = JSON.parse(localStorage.getItem('schedule'));
             console.log('1 day ', schedule['1'].days['1'].date);
             if (Object.keys(schedule).length) {
-                let startDate = new Date(schedule['1'].days['1'].date).getDate();
+                let startDate = new Date(schedule['1'].days['1'].date).getTime();
                 let nowDate = new Date().getTime();
                 let oneDay = 1000 * 60 * 60 * 24;
                 let difference = Math.round((nowDate - startDate) / oneDay);
@@ -102,6 +102,8 @@ export default {
             let schedule = JSON.parse(localStorage.getItem('schedule'));
             if (Object.keys(schedule).length) {
                 let startDate = new Date(schedule['1'].days['1'].date).getTime();
+                console.log('first day', schedule['1'].days['1'].date );
+
                 let nowDate = new Date().getTime();
                 let oneDay = 1000 * 60 * 60 * 24;
                 let difference = Math.round((nowDate - startDate) / oneDay) % 7;

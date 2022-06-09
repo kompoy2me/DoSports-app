@@ -63,7 +63,7 @@
               class="my-3"
               @click="$router.push({ name: 'sub'}).catch(err => {})"
             >
-                    <v-icon class="mr-6">mdi-home-variant-outline</v-icon>
+                    <v-icon class="mr-6">mdi-card-account-details-star-outline</v-icon>
                 <v-list-item-title>Подписка</v-list-item-title>
             </v-list-item>
             <v-list-item
@@ -89,25 +89,52 @@
             </v-list-item>
             <v-list-item
               class="my-3"
+              @click="$router.push({ name: 'trains'}).catch(err => {})"
+            >
+                    <v-icon class="mr-6">mdi-yoga</v-icon>
+                <v-list-item-title>Тренировки</v-list-item-title>
+            </v-list-item>
+
+            <!--Premium доступ-->
+            <v-list-item v-if="user.pro_last_datetime != null"
+              class="my-3"
               @click="$router.push({ name: 'personal-food'}).catch(err => {})"
             >
                     <v-icon class="mr-6">mdi-food-apple-outline</v-icon>
                 <v-list-item-title>Мои продукты</v-list-item-title>
             </v-list-item>
-            <v-list-item
+            <v-list-item v-if="user.pro_last_datetime != null"
               class="my-3"
               @click="$router.push({ name: 'rations'}).catch(err => {})"
             >
                     <v-icon class="mr-6">mdi-bowl-mix-outline</v-icon>
                 <v-list-item-title>Мои рационы</v-list-item-title>
             </v-list-item>
-            <v-list-item
+
+            <!--Без подписки-->
+            <v-list-item v-if="user.pro_last_datetime === null"
+              class="my-3"
+              style="color: #51516C"
+            >
+                    <v-icon class="mr-6" color="#51516C">mdi-food-apple-outline</v-icon>
+                <v-list-item-title>Мои продукты</v-list-item-title>
+            </v-list-item>
+            <v-list-item v-if="user.pro_last_datetime === null"
+              class="my-3"
+              style="color: #51516C"
+            >
+                    <v-icon class="mr-6" color="#51516C">mdi-bowl-mix-outline</v-icon>
+                <v-list-item-title>Мои рационы</v-list-item-title>
+            </v-list-item>
+
+
+            <!--<v-list-item
               class="my-3"
               @click="$router.push({ name: 'atlas'}).catch(err => {})"
             >
                     <v-icon class="mr-6">mdi-home</v-icon>
                 <v-list-item-title>Атлас тела</v-list-item-title>
-            </v-list-item>
+            </v-list-item>-->
             
           </v-list-item-group>
         </v-list>

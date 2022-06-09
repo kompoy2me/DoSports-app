@@ -1,6 +1,15 @@
 <template>
     <div>
-        <div>
+        <div v-if="load" class="load">
+            <v-progress-circular 
+                :width="4"
+                :size="40"
+                indeterminate
+                color="#004BD7"
+            ></v-progress-circular>
+        </div>
+        <div v-else>
+            <div>
             <img
                 class="mt-8" 
                 :width=54
@@ -46,13 +55,22 @@
                 Войти
             </v-btn>
         </v-form>
+        </div>
+
+        <v-dialog
+            v-model="dialog"
+        >
+            <alert-message :msg='msg' @clicked="dialog = false"></alert-message>
+        </v-dialog>
+
     </div>
-	
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex';
+import AlertMessage from "./AlertMessage.vue";
 export default {
+    components: {AlertMessage},
     data: () => ({
         user: {
             login: "",
@@ -69,7 +87,9 @@ export default {
             ]
         },
         showPass: false,
-
+        load: false,
+        dialog: false,
+        msg: {title: '', text: ''},
     }),
     computed: {
         ...mapGetters(["activeProgramStatus","getMessage", "getUser", "programData"])
@@ -78,53 +98,56 @@ export default {
         ...mapActions(["checkActiveProgram","authRequest", "checkAccess", "showProgram", "initSchedule"]),
 
         async authUser() {
-            this.logProgress = true;
             if (this.$refs.form.validate()) {
-                this.authRequest(this.user).then( () => { 
+                this.logProgress = true;
+                await this.authRequest(this.user).then( () => { 
                     if (localStorage.getItem("user-auth")) {
                         this.checkUserData();
                     } else {
                         if (this.getMessage) {
                             this.user.password = "";
-                            alert("Проверьте правильность логина или пароля");
-                            
+                            this.logProgress = false;
+                            this.msg = {title: 'Ошибка входа', text: 'Проверьте правильность логина или пароля'},
+                            this.dialog = true;
                         }
                     }
                 })
                 
             }
         },
+
         checkUserData(){
             this.checkAccess().then(() => {
                 if (this.getUser) {
-                    localStorage.setItem("user", JSON.stringify(this.getUser));
                     this.checkUserProgram();
                 }
                 else {
-                    alert(this.getMessage);
+                    this.msg = {title: 'Ошибка входа', text: this.getMessage},
+                    this.logProgress = false;
+                    this.dialog = true;
+                    //alert(this.getMessage);
                 }
             })
         },
-        checkUserProgram() {
+
+        async checkUserProgram() {
             this.checkActiveProgram(this.getUser.id).then(() =>{
-                console.log(this.getUser.id, this.activeProgramStatus);
                 if (!this.activeProgramStatus) {
-                    this.$router.push({ name: 'start-prog'})
+                    this.$router.push({ name: 'start-prog'});
                 }
                 else {
                     //скачать программу пользователя
                     this.showProgram(this.getUser).then(() => {
-                        localStorage.setItem("program", JSON.stringify(this.programData));
-                        this.createScedule();
+                        this.load = true;
+                        this.initSchedule().then(() => {
+                            this.$router.push({name: "main"});
+                        })
                     });
                     
-                    this.$router.push({name: "main"});
                 }
             })
         },
-        createScedule() {
-            this.initSchedule();
-        }
+
     }  
 }
 </script>
@@ -133,5 +156,8 @@ export default {
 @import "../assets/main.css";
 @import "../assets/forms.scss";
 
-
+.load {
+    text-align: center;
+    margin-top: 40vh !important;
+}
 </style>

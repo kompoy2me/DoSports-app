@@ -30,6 +30,11 @@ const routes = [
 		component: () => import('@/pages/StartProgramOffline')
 	},
 	{
+		path: '/start-prog',
+		name: 'start-prog',
+		component: () => import('@/pages/StartProgramPage')
+	},
+	{
 		path: '/app',
 		name: 'menuLayout',
 		component: () => import('@/pages/MenuLayout'),
@@ -54,11 +59,7 @@ const routes = [
 				name: 'sport',
 				component: () => import('@/pages/SportProgramPage')
 			},
-			{
-				path: '/start-prog',
-				name: 'start-prog',
-				component: () => import('@/pages/StartProgramPage')
-			},
+			
 			{
 				path: '/user',
 				name: 'user',
@@ -95,6 +96,11 @@ const routes = [
 				path: '/sub',
 				name: 'sub',
 				component: () => import('@/pages/SubscriptionPage')
+			},
+			{
+				path: '/trains',
+				name: 'trains',
+				component: () => import('@/pages/TrainsPage')
 			},
 			
 

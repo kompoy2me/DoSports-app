@@ -9,7 +9,7 @@
                 <div>Здесь будет отображаться информация о ваших рационах. <p></p>Создать рацион можно при формировании приемов пищи.</div>
             </div>
             <div v-else>
-                <div style="text-align: center; font-size: 10pt; color:#B5B5B8" class="px-10 py-6">Вы можете отредактировать рацион, нажав на его название</div>
+                <!--<div style="text-align: center; font-size: 10pt; color:#B5B5B8" class="px-10 py-6">Вы можете отредактировать рацион, нажав на его название</div>-->
                 <div class="my-3" v-for="ration in personRations"
                     :key="ration.id"
                 >
@@ -60,7 +60,6 @@ export default {
 
         updateRations() {
             this.personRations = JSON.parse( localStorage.getItem('rations'));
-            console.log('updated rrrrr', this.personRations.length);
             this.statusRations = 'rations'
         },
         
@@ -78,7 +77,7 @@ export default {
         },
 
         openRation(ration) {
-            alert('open', ration.id)
+            console.log('open', ration.id)
         },
 
         async showPersonRations() {

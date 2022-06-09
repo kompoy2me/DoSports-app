@@ -16,7 +16,6 @@ export default{
                 if (!resp.data.message) {
                     ctx.commit("authSuccess", resp.data.token);
                 }
-                console.log('auth Success');
                 ctx.commit("updateMessage", resp.data.message);
             }).catch((err) => {
                 console.log('auth Error');

@@ -86,7 +86,7 @@ export default {
                 let startDate = new Date(schedule['1'].days['1'].date).getTime();
                 let nowDate = new Date().getTime();
                 let oneDay = 1000 * 60 * 60 * 24;
-                let difference = Math.round((nowDate - startDate) / oneDay);
+                let difference = Math.floor((nowDate - startDate) / oneDay);
                 if (difference < 7) {
                     this.modelWeeks  = 0;
                 } else if (difference < 14) {
@@ -99,16 +99,18 @@ export default {
         },
 
         nowDay() {
+            
             let schedule = JSON.parse(localStorage.getItem('schedule'));
+            
             if (Object.keys(schedule).length) {
                 let startDate = new Date(schedule['1'].days['1'].date).getTime();
                 console.log('first day', schedule['1'].days['1'].date );
 
                 let nowDate = new Date().getTime();
                 let oneDay = 1000 * 60 * 60 * 24;
-                let difference = Math.round((nowDate - startDate) / oneDay) % 7;
-                difference = difference <= 21 ? difference % 7 : 7;
-                this.modelDays = difference;
+                let difference = Math.floor((nowDate - startDate) / oneDay);
+                difference = difference < 21 ? difference % 7 : 6;
+                this.modelDays = difference + 1;
                 console.log('DAY ',this.modelDays);
                 
             }

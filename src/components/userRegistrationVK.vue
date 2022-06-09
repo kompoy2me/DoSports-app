@@ -14,6 +14,8 @@
                 transition="scale-transition"
                 offset-y
                 min-width="90%"
+                :color="'#FFF'"
+                
                 >
                 <template v-slot:activator="{ on, attrs }">
                     <v-text-field
@@ -23,14 +25,15 @@
                         hide-details="auto"                  
                         v-bind="attrs"
                         readonly
-                        class="mb-4"
                         v-on="on"
                         required
                         outlined
-                        color="#9196FF"
+                        class="mb-4"
                     ></v-text-field>
                 </template>
                 <v-date-picker
+                    style="background-color: #004bd7"
+                    header-color="secondary"
                     v-model="date"
                     :active-picker.sync="activePicker"
                     min="1950-01-01"
@@ -100,16 +103,25 @@
                 large
                 block
                 class="my-8"
+                :loading="logProgress"
             >Зарегистрироваться
             </v-btn>
 		</v-form>
 		
+        <v-dialog
+            v-model="dialog"
+        >
+            <alert-message :msg='msg' @clicked="dialog = false"></alert-message>
+        </v-dialog>
+
 	</div>
 </template>
 
 <script>
+import AlertMessage from "./AlertMessage.vue";
 import {mapActions, mapGetters} from "vuex";
 export default {
+    components: ([AlertMessage]),
 	data: () => ({
         newUserVK: {
             fullname: "",
@@ -141,6 +153,9 @@ export default {
         activePicker: null,
         date: null,
         menu: false,
+        logProgress: false,
+        dialog: false,
+        msg: {title: '', text: ''},
 	}),
     
     watch: {
@@ -187,19 +202,23 @@ export default {
         
         addUser() {
             if (this.$refs.form.validate()) {
+                this.logProgress = true;
                 this.createUserVk(this.newUserVK).then(() => {
                     if (localStorage.getItem("user-auth")) {
                         this.checkAccess().then(()=>{
-                            localStorage.setItem("user", JSON.stringify(this.getUser));
                             this.$router.push({ name: 'start-prog'});
                         })
                     }
                     else {
-                        alert(this.getMessageReg)
+                        this.logProgress = false;
+                        this.msg = {title: 'Ошибка регистрации', text: this.getMessageReg},
+                        this.dialog = true;
+                        //alert(this.getMessageReg)
                     }
                 })
             }
         },
+        
 
         setVkData() {
             this.newUserVK.login = this.getUserVkData.username;
@@ -218,8 +237,6 @@ export default {
     },
     created() {
         this.setVkData();
-        console.log('newUserVK ', JSON.stringify(this.getUserVkData));
-        console.log(localStorage.getItem('user-auth'), localStorage.getItem('user'));
     }
 }
 </script>
@@ -234,5 +251,8 @@ label {
 .v-input--checkbox .v-label {
     font-size: 10pt;
 }
-
+div.v-picker__body {
+  background-color: #004bd7 !important;
+  color: white;
+}
 </style>

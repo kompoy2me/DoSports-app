@@ -1,74 +1,95 @@
 <template>
 	<div>
-		
-		<v-img
-			src="@/assets/img/png/start-img.png"
-			height="100vh"
-			gradient="to bottom, rgba(0, 75, 215, .1), rgba(0, 13, 130, 0.3)"
-		></v-img>
-		<div class="logotype">
-				<v-img
-					style="display:inline-block"
-					src="@/assets/img/svg/logo-white.svg"
-					width=8% 
-					height=auto
-				></v-img>
-				<v-img
-					style="display:inline-block; margin-left: 4px;"
-					src="@/assets/img/svg/DO_SPORTS-small.svg"
-					width=26% 
-					height=auto
-				></v-img>
-			</div>
-		<div class="main">
-			
-			
-			<p
-			>ТВОЙ ПУТЬ К ЗДОРОВОМУ ТЕЛУ ВМЕСТЕ С DO SPORTS</p>
-			<div>
-				<v-btn
-					width="100%"
-					color="primary"
-					large
-					@click="$router.push({ name: 'registration' })"
-				>Зарегистрироваться
-				</v-btn>
-				<div class="btn-holder">
+		<div v-if="load" class="load">
+            <v-progress-circular 
+                :width="4"
+                :size="40"
+                indeterminate
+                color="#004BD7"
+            ></v-progress-circular>
+        </div>
+
+		<div v-if="!load">
+			<v-img
+				src="@/assets/img/png/start-img.png"
+				height="100vh"
+				gradient="to bottom, rgba(0, 75, 215, .1), rgba(0, 13, 130, 0.3)"
+			></v-img>
+			<div class="logotype">
+					<v-img
+						style="display:inline-block"
+						src="@/assets/img/svg/logo-white.svg"
+						width=8% 
+						height=auto
+					></v-img>
+					<v-img
+						style="display:inline-block; margin-left: 4px;"
+						src="@/assets/img/svg/DO_SPORTS-small.svg"
+						width=26% 
+						height=auto
+					></v-img>
+				</div>
+			<div class="main">
+				
+				
+				<p
+				>ТВОЙ ПУТЬ К ЗДОРОВОМУ ТЕЛУ ВМЕСТЕ С DO SPORTS</p>
+				<div>
 					<v-btn
+						width="100%"
 						color="primary"
 						large
-						@click="$router.push({ name: 'authorization'})"
-					>Войти
+						@click="$router.push({ name: 'registration' })"
+					>Зарегистрироваться
 					</v-btn>
-					<v-btn
-						color="#0077FF !important"
-						large
-						@click="openBrowser"
-					>
-					<v-img
-						src="@/assets/img/png/vk-logo.png"
-						height="14px"
-						width="26px"
-						class="mr-1"
-					></v-img>
-					Войти через VK
-					</v-btn>
+					<div class="btn-holder">
+						<v-btn
+							color="primary"
+							large
+							@click="$router.push({ name: 'authorization'})"
+						>Войти
+						</v-btn>
+						<v-btn
+							color="#0077FF !important"
+							large
+							@click="openBrowser"
+							:loading="logProgress"
+						>
+						<v-img
+							src="@/assets/img/png/vk-logo.png"
+							height="14px"
+							width="26px"
+							class="mr-1"
+						></v-img>
+						Войти через VK
+						</v-btn>
+					</div>
+					
 				</div>
-				
 			</div>
 		</div>
-
-
+		
+		<v-dialog
+			v-model="dialog"
+        >
+            <alert-message :msg='msg' @clicked="dialog = false"></alert-message>
+        </v-dialog>
 		
 	</div>
 </template>
 
 <script>
+import AlertMessage from "@/components/AlertMessage.vue";
 import {mapActions, mapGetters} from "vuex";
 export default {
+	components: {AlertMessage},
 	data: () => ({
-			ref: {},
-			token: "",
+		ref: {},
+		token: "",
+		load: false,
+		dialog: false,
+        msg: {title: '', text: ''},
+		logProgress: false,
 	}),
 	
 	watch: {
@@ -79,16 +100,14 @@ export default {
     methods: {
 		...mapActions(["checkUserVk", "checkUserVkInDb","checkActiveProgram","authRequest", "checkAccess", "showProgram", "initSchedule"]),
 
-
-		
 		authUser() {
 			this.checkUserVk(this.token).then(() => {
 				if (this.getUserVkData) {
-					console.log('USER VK ID ', this.getUserVkData.id);
 					this.checkUserVkInDb(this.getUserVkData.id).then(() => {
-						console.log('MATCH VK ', this.getMatchVK);
 						if (this.getMatchVK === null) {
-							alert('Ошибка авторизации')
+							this.logProgress = false;
+                            this.msg = {title: 'Ошибка входа', text: 'Повторите попытку позднее'},
+                            this.dialog = true;
 						}
 						else {
 							if (this.getMatchVK) {
@@ -106,35 +125,32 @@ export default {
 		checktUserData(){
             this.checkAccess().then(() => {
                 if (this.getUser) {
-                    localStorage.setItem("user", JSON.stringify(this.getUser));
                     this.checkUserProgram();
                 }
                 else {
-                    alert(this.getMessage);
+					this.logProgress = false;
+					this.msg = {title: 'Ошибка входа', text: this.getMessage},
+					this.dialog = true;
+					//alert(this.getMessage);
                 }
             })
         },
 
         checkUserProgram() {
             this.checkActiveProgram(this.getUser.id).then(() =>{
-                console.log(this.getUser.id, this.activeProgramStatus);
                 if (!this.activeProgramStatus) {
                     this.$router.push({ name: 'start-prog'})
-					
                 }
                 else {
                     //скачать программу пользователя
                     this.showProgram(this.getUser).then(() => {
-                        localStorage.setItem("program", JSON.stringify(this.programData));
-						this.createScedule();
+                        this.load = true;
+                        this.initSchedule().then(() => {
+                            this.$router.push({name: "main"});
+                        })
                     });
-                    this.$router.push({name: "main"});
                 }
             })
-        },
-
-		createScedule() {
-            this.initSchedule();
         },
 
         /*eslint-disable*/
@@ -143,8 +159,8 @@ export default {
             this.ref.addEventListener('loadstart', (event)=>{
                 this.loadstartCallback(event)
             });
-			this.ref.addEventListener('loaderror', (event)=>{
-                this.loaderrorCallback(event)
+			this.ref.addEventListener('loaderror', (error)=>{
+                this.loaderrorCallback(error)
             });
 			this.ref.addEventListener('loadstop', loadstopCallback);
 			function loadstopCallback(event) {
@@ -152,15 +168,15 @@ export default {
 			}
 		},
 
-		loaderrorCallback() {
+		loaderrorCallback(error) {
 			console.log('Loading error: ' + error.message);
 			this.ref.close();
 		},
 
 		loadstartCallback(event) {
-			console.log('REF ',JSON.stringify(this.ref));
             console.log('Loading started: '  + event.url);
             if (event.url.includes('registration-vk')) {
+				this.logProgress = true;
 				this.ref.hide();
                 let urlSplitted = event.url.split('/');
                 this.token = urlSplitted[urlSplitted.length-1];
@@ -168,7 +184,7 @@ export default {
 				this.authUser();
             }
 			if (event.url.includes('description=User+denied+your+request')) {
-				this.ref.hide();
+				this.ref.close();
             }
         
 		},
@@ -204,5 +220,9 @@ p {
 	position: absolute;
 	top: 0px;
 	margin: 20px 16px;
+}
+.load {
+    text-align: center;
+    margin-top: 40vh !important;
 }
 </style>

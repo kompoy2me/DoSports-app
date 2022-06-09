@@ -1,124 +1,160 @@
 <template>
-	<div>
-        <div class="headline"
-        >Начните свою программу <p style="color: #9196FF">прямо сейчас >>></p></div>
-        <div class="mb-14">
+	<div class="main-start">
+
+        <div v-if="load" class="load">
+            <v-progress-circular 
+                :width="4"
+                :size="40"
+                indeterminate
+                color="#004BD7"
+            ></v-progress-circular>
+        </div>
+
+        <div v-else>
+            <div class="mt-6 mb-4 headline"
+        >Начните свою программу <p style="color: #9196FF">прямо сейчас >>></p> </div> 
+        <div class="mb-6">
             Прежде чем начать, необходимо рассчитать индекс массы тела, дневную норму потребления питательных веществ и калорий.
         </div>
+
         <v-form ref="form" lazy-validation>
-        <div class="row mb-3">
-            
-            <div>
-                <label>Рост(см)</label>
-                <v-text-field
-                    v-model="program.height"
-                    :rules="rules.height"
-                    hide-details="auto"
-                    required
-                    outlined
-                    color="#9196FF"
-                ></v-text-field> 
-            </div>   
+            <div class="d-flex flex-row justify-space-between mb-3"  >
+                <div style="width:46%">
+                    <label class="label-font">Рост(см)</label>
+                    <v-text-field
+                        v-model="program.height"
+                        :rules="rules.height"
+                        hide-details="auto"
+                        required
+                        outlined
+                        type="number"
+                        color="#9196FF"
+                    ></v-text-field> 
+                </div>   
 
-            <div>
-                <label>Вес(кг)</label>
-                <v-text-field
-                    v-model="program.weight"
-                    :rules="rules.weight"
-                    hide-details="auto"
-                    required
-                    outlined
-                    color="#9196FF"
-                ></v-text-field>    
+                <div style="width:46%">
+                    <label class="label-font">Вес(кг)</label>
+                    <v-text-field
+                        v-model="program.weight"
+                        :rules="rules.weight"
+                        hide-details="auto"
+                        required
+                        outlined
+                        type="number"
+                        color="#9196FF"
+                    ></v-text-field>    
+                </div>
             </div>
-        </div>
-        
-        <div class="border mb-8">
-            {{ message }}
-        </div>
-        
-        <label>Образ жизни</label>
-        <v-select
-            class="mb-4"
-            :menu-props="{ bottom: true, offsetY: true }"
-            :append-icon="'mdi-chevron-down'"
-            :items="this.lifestyleList"
-            :item-text="'name'"
-            :item-value="'id'"
-            v-model="program.lifestyle"
-            outlined
-        ></v-select>
-
-        <label>Уровень подготовленности к тренировкам</label>
-        <v-radio-group
-            class="mt-2 mb-2 pa-0"
             
-            v-model="program.trainPrepare"
-            >
-            <div class="flex-start mb-3">
-                <v-radio
-                    value="0"
-                ></v-radio>
-                <label >Новичок (Вы - начинающий. Вы не знаете, какое количество тренировок в неделю вам необходимо. Система посчитает это за вас)</label>
+            <div class="border mb-4">
+                {{ message }}
             </div>
-            <div class="flex-start">
-                <v-radio
-                    value="1"
-                ></v-radio>
-                <label >Профессионал (Вы знаете, сколько тренировок вам необходимо в неделю. Система предоставит возможность создавать любое их количество)</label>
-            </div>
-        </v-radio-group>
-        <div >
-            <label >Цель программы</label>
+            
+            <label class="label-font">Образ жизни</label>
+            <v-select
+                class="mb-6"
+                :menu-props="{ bottom: true, offsetY: true }"
+                :append-icon="'mdi-chevron-down'"
+                :items="this.lifestyleList"
+                :item-text="'name'"
+                :item-value="'id'"
+                v-model="program.lifestyle"
+                outlined
+                hide-details="auto"
+            ></v-select>
+
+            <label class="label-font">Уровень подготовленности к тренировкам</label>
+            
             <v-radio-group
-            class="ma-0 pa-0 "
-                v-model="program.aim"
-            >   
-                <div class="flex-bottom">
-                    <v-radio
-                        value="0"    
-                        dark
-                    ></v-radio>
-                <label >Поддержание веса</label>
-                </div>
+                class="ma-0 pa-0"
                 
-                <div class="flex-bottom">
+                v-model="program.trainPrepare"
+                hide-details="auto"
+                >
+                <div class="flex-start mb-3">
                     <v-radio
-                        value="1"    
-                        dark
+                        value="0"
                     ></v-radio>
-                <label >Сброс веса</label>
+                    <div >Новичок (Вы - начинающий. Вы не знаете, какое количество тренировок в неделю вам необходимо. Система посчитает это за вас)</div>
                 </div>
-                <div class="flex-bottom">
+                <div class="flex-start">
                     <v-radio
-                        value="2"    
-                        dark
+                        value="1"
                     ></v-radio>
-                <label >Набор веса</label>
+                    <div >Профессионал (Вы знаете, сколько тренировок вам необходимо в неделю. Система предоставит возможность создавать любое их количество)</div>
                 </div>
             </v-radio-group>
-        </div>
-        <v-btn
-            @click="this.calculateProgram"
-            color="primary"
-            width="100%"
-            class="mb-6"
-        >Начать программу
-        </v-btn>
+            <div class="my-4">
+                <label class="label-font" >Цель программы</label>
+                <v-radio-group
+                class="ma-0 pa-0 "
+                    v-model="program.aim"
+                >   
+                    <div class="d-flex align-center">
+                        <v-radio
+                            value="0"    
+                            dark
+                            class="mr-2" 
+                        ></v-radio>
+                    <label >Поддержание веса</label>
+                    </div>
+                    
+                    <div class="d-flex align-center">
+                        <v-radio
+                            value="1"
+                            class="mr-2"    
+                            dark
+                        ></v-radio>
+                    <label >Сброс веса</label>
+                    </div>
+                    <div class="d-flex align-center">
+                        <v-radio
+                            value="2"    
+                            dark
+                            class="mr-2" 
+                        ></v-radio>
+                    <label >Набор веса</label>
+                    </div>
+                </v-radio-group>
+            </div>
+            <v-btn
+                @click="this.calculateProgram"
+                color="primary"
+                width="100%"
+                class="mb-6"
+                :loading="initProgress"
+            >Начать программу
+            </v-btn>
         </v-form>
+
+        <v-dialog
+            v-model="dialog"
+        >
+            <alert-message :msg='msg' @clicked="createScedule"></alert-message>
+        </v-dialog>
+        </div>
+
+        
+
     </div>
 </template>
 
 <script>
 import {mapGetters, mapActions} from "vuex";
+import AlertMessage from "./AlertMessage.vue";
 export default {
+    components: {AlertMessage},
     data: () => ({
+        initProgress: false,
+        dialog: false,
+        msg: {title: '', text: ''},
+        load: false,
         user: null,
         program: {
             idUser: JSON.parse(localStorage.getItem("user")).id,
             bmi: 0,
-            height: 0,
-            weight: 0,
+            height: '',
+            weight: '',
             weightCategory: 0,
             lifestyle: 1,
             trainPrepare: "0",
@@ -139,35 +175,59 @@ export default {
     }),
     computed: {
         ...mapGetters(["lifestyleList", "weightCategoryList", "createProgramStatus", "activeProgramStatus"]),
-         bmi() {
-            if (this.program.height && this.program.weight) return Math.round(this.program.weight / (this.program.height ** 2) * 10000 * 10) / 10
+        bmi() {
+            if (this.program.height && this.program.weight) 
+                return Math.round(this.program.weight / (this.program.height ** 2) * 10000 * 10) / 10
             return 0
         },
         weightCategory() {
             return this.weightCategoryList.find(obj => this.bmi >= obj.min_bmi && this.bmi <= obj.max_bmi);
         },
         messageBmi() {
-            if (this.bmi) {
+            if (this.bmi > 0 && this.weightCategory != undefined) {
                 return `Ваш ИМТ - ${this.bmi}. У вас ${this.weightCategory.name}.`
             }
             return "Индекс массы тела позволяет оценить является ли масса недостаточной, нормальной или избыточной."
 
         }
     },
+    watch: {
+        bmi() {
+            this.program.bmi = this.bmi;
+        },
+        weightCategory() {
+            if (this.weightCategory != undefined) {
+                this.program.weightCategory = this.weightCategory.id;
+            }
+            
+        },
+        messageBmi() {
+            this.message = this.messageBmi;
+        }
+    },
+
     methods: {
-        ...mapActions(["showLifestyleList", "showWeightCategoryList", "createProgram", "checkActiveProgram", "initSchedule"]),
-        calculateProgram() {
+        ...mapActions(["showLifestyleList", "showWeightCategoryList", "createProgram", "checkActiveProgram", "initSchedule", "showProgram"]),
+        
+        async calculateProgram() {
             if (this.$refs.form.validate()) {
+                this.initProgress = true;
                 this.program.norm = this.pfc();
-                this.program.height = parseInt(this.program.height)
-                this.program.weight = parseInt(this.program.weight)
+                this.program.height = parseInt(this.program.height);
+                this.program.weight = parseInt(this.program.weight);
+
                 this.createProgram(this.program).then(() => {
                     if (this.createProgramStatus === "Success") {
-                        console.log(JSON.stringify(this.program))
-                        localStorage.setItem("program", JSON.stringify(this.program));
-                        this.createScedule();
-                        alert("Успешно");
-                        this.$router.push({ name: 'sport'});
+                        let prog = {
+                            id: JSON.parse(localStorage.getItem("user")).id
+                        };
+                        this.showProgram(prog).then(() => {
+                            
+                            this.msg = {title: 'Программа успешно создана!', text: 'Программа рассчитана на 3 недели. По желанию вы можете сбросить текущую программу и начать новую.'},
+                            this.dialog = true;
+                        })
+                        //console.log('created program: ', JSON.stringify(this.program))
+                        //localStorage.setItem("program", JSON.stringify(this.program));
                     }
                     else {
                         alert(this.createProgramStatus)
@@ -175,6 +235,7 @@ export default {
                 })
             }
         },
+
         pfc() {
             let calories = this.calNorm();
             calories += this.valuePfc(calories);
@@ -228,18 +289,11 @@ export default {
             }
         },
         createScedule() {
-            this.initSchedule();
-        }
-    },
-     watch: {
-        bmi() {
-            this.program.bmi = this.bmi;
-        },
-        weightCategory() {
-            this.program.weightCategory = this.weightCategory.id;
-        },
-        messageBmi() {
-            this.message = this.messageBmi;
+            this.dialog = false;
+            this.load = true;
+            this.initSchedule().then(() => {
+                this.$router.push({name: "main"});
+            })
         }
     },
     mounted() {
@@ -249,16 +303,22 @@ export default {
     created() {
         this.user = JSON.parse(localStorage.getItem("user"));
         
-    }
+    },
+
 }
 </script>
 	
 <style lang="scss">
 @import "../assets/main.css";
 @import "../assets/forms.scss";
-.row {
-    display: flex;
-    justify-content: space-around; 
+
+.main-start {
+    font-family: "Inter-Regular", sans-serif;
+
+}
+.label-font {
+    color: #B5B5B8;
+    font-size: 11pt;
 }
 .border {
     padding: 4%;
@@ -267,15 +327,14 @@ export default {
 .headline {
     margin-bottom: 10px !important;
 }
-
-.flex-bottom {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-end;
-}
 .flex-start {
     display: flex;
     flex-direction: row;
     align-items: flex-start;
 }
+.load {
+    text-align: center;
+    margin-top: 40vh !important;
+}
+
 </style>

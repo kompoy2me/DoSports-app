@@ -19,10 +19,11 @@ export default {
         currDate: null,
         programPersonalFoods: [],
         programRations: [],
+        programTrainMods: [],
+        programTrainsToday: [],
     },
 
     actions: {
-        
         async initSchedule(ctx) {
             let weeks = {};
             // задать недели
@@ -36,8 +37,10 @@ export default {
                         id: d + 1,
                         date: date,
                         weekDay: date.getDay(),
-                        diet: {}
+                        diet: {},
+                        trains: {}
                     }
+
                     let month = date.getMonth() + 1;
                     let date_input = `${date.getDate() < 10 ? '0' + date.getDate() : date.getDate()}.${month < 10 ? '0' + month : month}.${date.getFullYear()}`;
                     let input = {
@@ -49,6 +52,7 @@ export default {
                         days[`${d + 1}`].diet = ctx.state.diet;
                         days[`${d + 1}`].eaten = ctx.state.eaten;
                     });
+
                 }
                 weeks[`${w + 1}`] = {
                     id: w + 1,
@@ -242,8 +246,10 @@ export default {
         },
 
         async showProgram(ctx, user) {
+            console.log('iddddd', user);
             await axios.post(`${url}/api/programs/get-program`, user).then((res) => {
                 if (res.data.name === "Success") {
+                    console.log(JSON.stringify(res.data))
                     ctx.commit("updateProgramData", res.data.program);
                 }
             });
@@ -274,6 +280,38 @@ export default {
                 ctx.commit(`updatePersonalFoods`, res.data);
             });
         },
+
+        async showTrainMods(ctx, program) {
+            await axios.post(`${url}/api/programs/get-train-mods`, program).then((res) => {
+                if (res.data.name === "Success") {
+                    ctx.commit("updateTrainMods", res.data.mods);
+                }
+            });
+        },
+
+        async showTrains(ctx, program) {
+            await axios.post(`${url}/api/programs/get-trains`, program).then((res) => {
+                if (res.data.name === "Success") {
+                    console.log('get-trains', JSON.stringify(res.data));
+                }
+            })
+        },
+
+        async showTrainProgram(ctx, program) {
+            await axios.post(`${url}/api/programs/get-train-program`, program).then((res) => {
+                if (res.data.name === "Success") {
+                    let trains = Array.from(res.data.trains);
+                    for (let i = 0; i < trains.length; i++) {
+                        trains[i].description = trains[i].description.split("\n");
+                        for (let j = 0; j < trains[i].description.length; j++) {
+                            trains[i].description[j] = trains[i].description[j].trim()
+                        }
+                        trains[i].description = trains[i].description.filter(value => !!value);
+                    }
+                    ctx.commit("updateTrainProgram", trains);
+                }
+            })
+        }
       
     },
 
@@ -295,6 +333,8 @@ export default {
         },
 
         updateProgramData(state, program) {
+            console.log('created program', JSON.stringify(program));
+            localStorage.setItem("program", JSON.stringify(program));
             state.program = program;
         },
 
@@ -311,9 +351,9 @@ export default {
         },
 
         updateSchedule(state, schedule) {
-            state.scheduleProgram = schedule;
             console.log('created schedule', JSON.stringify(schedule));
             localStorage.setItem("schedule", JSON.stringify(schedule));
+            state.scheduleProgram = schedule;
         },
         
         updateProgramDiet(state, diet) {
@@ -355,6 +395,14 @@ export default {
             localStorage.setItem('rations', JSON.stringify(rations))
             state.programRations = rations;
         },
+
+        updateTrainMods(state, mods) {
+            state.programTrainMods = mods;
+        },
+
+        updateTrainProgram(state, trains) {
+            state.programTrainsToday = trains;
+        }
     },
 
     getters: {
@@ -413,5 +461,13 @@ export default {
         rations(state) {
             return state.programRations;
         },
+
+        trainMods(state) {
+            return state.programTrainMods;
+        },
+
+        trainProgram(state) {
+            return state.programTrainsToday;
+        }
     }
 }

@@ -91,7 +91,7 @@
               class="my-3"
               @click="$router.push({ name: 'trains'}).catch(err => {})"
             >
-                    <v-icon class="mr-6">mdi-yoga</v-icon>
+                    <v-icon class="mr-6" >mdi-yoga</v-icon>
                 <v-list-item-title>Тренировки</v-list-item-title>
             </v-list-item>
 

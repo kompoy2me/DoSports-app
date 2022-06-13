@@ -126,6 +126,7 @@ export default {
         setCurrData(day, week) {
             this.currentDate.day = day + 1;
             this.currentDate.week = week + 1;
+            console.log('UPDATED DATE ', week, day);
             this.updateBase();
             
         },

@@ -5,8 +5,8 @@
             <div class="pt-6 meal-edit-head">
                 <div class="px-4">
                     <div>
-                         <img 
-                         class="ml-2"
+                        <img 
+                        class="ml-2"
                         :width=54
                         @click="$router.push({ name: 'diary'}).catch(err => {})"
                         :src="require('@/assets/img/png/arrow-back--white1.png')">

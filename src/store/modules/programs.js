@@ -21,6 +21,7 @@ export default {
         programRations: [],
         programTrainMods: [],
         programTrainsToday: [],
+        programTrains: [],
     },
 
     actions: {
@@ -32,6 +33,7 @@ export default {
                 // задать дни
                 for (let d = 0; d < 7; d++) {
                     let date = new Date(ctx.state.program.date_start);
+                    console.log('1 day prog',date);
                     date.setDate(date.getDate() + w * 7 + d);
                     days[`${d + 1}`] = {
                         id: d + 1,
@@ -293,6 +295,15 @@ export default {
             await axios.post(`${url}/api/programs/get-trains`, program).then((res) => {
                 if (res.data.name === "Success") {
                     console.log('get-trains', JSON.stringify(res.data));
+                    let trains = Array.from(res.data.trains);
+                    for (let i = 0; i < trains.length; i++) {
+                        trains[i].description = trains[i].description.split("\n");
+                        for (let j = 0; j < trains[i].description.length; j++) {
+                            trains[i].description[j] = trains[i].description[j].trim()
+                        }
+                        trains[i].description = trains[i].description.filter(value => !!value);
+                    }
+                    ctx.commit("updateTrains", trains);
                 }
             })
         },
@@ -402,7 +413,11 @@ export default {
 
         updateTrainProgram(state, trains) {
             state.programTrainsToday = trains;
-        }
+        },
+
+        updateTrains(state, trains) {
+            state.programTrains = trains;
+        },
     },
 
     getters: {
@@ -468,6 +483,10 @@ export default {
 
         trainProgram(state) {
             return state.programTrainsToday;
-        }
+        },
+
+        trains(state) {
+            return state.programTrains;
+        },
     }
 }

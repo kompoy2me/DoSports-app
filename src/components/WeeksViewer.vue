@@ -63,8 +63,8 @@
 <script>
 export default {
     data: () => ({
-        modelDays: 0,
-        modelWeeks: 0,
+        modelDays: '',
+        modelWeeks: '',
     }),
     watch: {
         modelDays: function () {
@@ -81,7 +81,6 @@ export default {
         
         nowWeek() {
             let schedule = JSON.parse(localStorage.getItem('schedule'));
-            console.log('1 day ', schedule['1'].days['1'].date);
             if (Object.keys(schedule).length) {
                 let startDate = new Date(schedule['1'].days['1'].date).getTime();
                 let nowDate = new Date().getTime();
@@ -101,17 +100,14 @@ export default {
         nowDay() {
             
             let schedule = JSON.parse(localStorage.getItem('schedule'));
-            
             if (Object.keys(schedule).length) {
-                let startDate = new Date(schedule['1'].days['1'].date).getTime();
-                console.log('first day', schedule['1'].days['1'].date );
-
+                let startDate = new Date(schedule['1'].days['1'].date).getTime();                
                 let nowDate = new Date().getTime();
                 let oneDay = 1000 * 60 * 60 * 24;
                 let difference = Math.floor((nowDate - startDate) / oneDay);
                 difference = difference < 21 ? difference % 7 : 6;
-                this.modelDays = difference + 1;
-                console.log('DAY ',this.modelDays);
+                this.modelDays = difference;
+                console.log('DAY ', this.modelDays);
                 
             }
         },

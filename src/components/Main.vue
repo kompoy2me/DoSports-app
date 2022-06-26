@@ -16,7 +16,7 @@
 <script>
 
 export default {
-    mounted() {
+    /*mounted() {
         let script = document.createElement("script");
         script.type = "text/javascript";
         script.innerHTML =
@@ -28,7 +28,7 @@ export default {
             "})"
         let div = document.querySelector("#yandex_rtb_R-A-1707251-2");
         div.append(script);
-    }
+    }*/
 
 }
 </script>

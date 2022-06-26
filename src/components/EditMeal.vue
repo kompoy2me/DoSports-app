@@ -1,6 +1,5 @@
 <template>
     <div >
-
         <div class="main-edit-meal" v-if="pageStatus === 'meal' && meal" >
             <div class="pt-6 meal-edit-head">
                 <div class="px-4">

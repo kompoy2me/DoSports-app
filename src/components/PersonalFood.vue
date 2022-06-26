@@ -5,7 +5,7 @@
         <div class="person-food-head"></div>
 
         <div class="person-food-body">
-            <div v-if="selfFoods.length === 0" class="px-4">
+            <div v-if="selfFoods.length === 0" class="px-4 pt-6">
                 <div >Здесь будет отображаться информация о ваших продуктах.</div>
             </div>
 

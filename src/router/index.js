@@ -42,17 +42,12 @@ const routes = [
 			{
 				path: '',
 				name: 'main',
-				component: () => import('@/pages/MainPage')
+				component: () => import('@/pages/SportProgramPage')
 			},
 			{
 				path: '/diary',
 				name: 'diary',
 				component: () => import('@/pages/DiaryPage')
-			},
-			{
-				path: '/atlas',
-				name: 'atlas',
-				component: () => import('@/pages/BodyAtlas')
 			},
 			{
 				path: '/sport',
@@ -102,7 +97,16 @@ const routes = [
 				name: 'trains',
 				component: () => import('@/pages/TrainsPage')
 			},
-			
+			{
+				path: '/atlas',
+				name: 'atlas',
+				component: () => import('@/pages/AtlasPage')
+			},
+			{
+				path: '/stat',
+				name: 'stat',
+				component: () => import('@/pages/StatisticPage')
+			},
 
 		]
 	},

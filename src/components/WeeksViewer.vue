@@ -23,7 +23,7 @@
                     <v-card
                         :class="active ? 'primary--text' : ''"
                         height="50"
-                        width="300"
+                        width="350"
                         elevation="0"
                         @click="toggle"
                     > Неделя {{n}}

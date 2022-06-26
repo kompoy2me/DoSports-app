@@ -33,13 +33,13 @@
         <v-list-item
           class="user-avatar pa-6 pt-10"
           @click="$router.push({ name: 'user'}).catch(err => {})" >
-          <div class="flex-column ">
+          <div class="d-flex flex-column align-center">
             <v-avatar 
               size="70"
               color="#1A1A27"
               class="my-2">
             </v-avatar>
-            <div >{{user.fullname}}</div>
+            <div >{{user.login}}</div>
           </div>
         </v-list-item>
         </v-list-item-group>
@@ -66,19 +66,20 @@
                     <v-icon class="mr-6">mdi-card-account-details-star-outline</v-icon>
                 <v-list-item-title>Подписка</v-list-item-title>
             </v-list-item>
-            <v-list-item
-              class="my-3"
-              @click="$router.push({ name: 'main'}).catch(err => {})"
-            >
-                    <v-icon class="mr-6">mdi-home-variant-outline</v-icon>
-                <v-list-item-title>Главная</v-list-item-title>
-            </v-list-item>
+            
             <v-list-item
               class="my-3"
               @click="$router.push({ name: 'sport'}).catch(err => {})"
             >
-                  <v-icon class="mr-6">mdi-chart-line</v-icon>
+                  <v-icon class="mr-6">mdi-abacus</v-icon>
                 <v-list-item-title>Основная информация</v-list-item-title>
+            </v-list-item>
+            <v-list-item
+              class="my-3"
+              @click="$router.push({ name: 'stat'}).catch(err => {})"
+            >
+                  <v-icon class="mr-6">mdi-chart-line</v-icon>
+                <v-list-item-title>Статистика</v-list-item-title>
             </v-list-item>
             <v-list-item
               class="my-3"
@@ -94,7 +95,13 @@
                     <v-icon class="mr-6" >mdi-yoga</v-icon>
                 <v-list-item-title>Тренировки</v-list-item-title>
             </v-list-item>
-
+            <v-list-item
+              class="my-3"
+              @click="$router.push({ name: 'atlas'}).catch(err => {})"
+            >
+                    <v-icon class="mr-6">mdi-book-edit-outline</v-icon>
+                <v-list-item-title>Дневник</v-list-item-title>
+            </v-list-item>
             <!--Premium доступ-->
             <v-list-item v-if="user.pro_last_datetime != null"
               class="my-3"

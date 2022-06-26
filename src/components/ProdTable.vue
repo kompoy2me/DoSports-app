@@ -24,7 +24,7 @@
                         </div>
                     </div>
                 </td>
-
+                
                   <tr class="food-items" >
                       <th>Б</th>
                       <th>Ж</th>

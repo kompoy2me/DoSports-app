@@ -7,7 +7,13 @@ import store from "./store"
 Vue.config.productionTip = false;
 
 document.addEventListener("deviceready", onDeviceReady, false);
+
+    function onBackKeyDown() {
+        console.log('Backbutton key pressed');
+    }
+    
 function onDeviceReady() {
+  document.addEventListener("backbutton", onBackKeyDown, false);
   new Vue({
     store,
     vuetify,

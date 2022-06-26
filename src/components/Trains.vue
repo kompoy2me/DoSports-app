@@ -43,7 +43,7 @@
     </div>
 
     <div v-else class="main-trains">
-      <div class="weekviever mb-4">
+      <div class="weekviever mb-2">
         <weeks-viewer 
             @curr-data="setCurrData"
         ></weeks-viewer>
@@ -194,7 +194,6 @@ export default {
             this.updateTrains();
           })
       }
-      
     },
 
     async getTrainMods() {
@@ -203,12 +202,10 @@ export default {
           aim: programData.aim,
           trainPrepare: programData.train_prepare
       }
-      await this.showTrainMods(program).then(() => {
-        this.trainStatus = 'trains';
-      })
+      this.showTrainMods(program)
     },
       
-    getAllTrains() {
+    async getAllTrains() {
       let programData = JSON.parse(localStorage.getItem('program'));
       let program = {
           aim: programData.aim,

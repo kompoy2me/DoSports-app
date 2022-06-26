@@ -1,11 +1,13 @@
 <template>
-	<div>BODY ATLAS</div>
+  
 </template>
 
 <script>
+export default {
 
+}
 </script>
 
 <style>
-	
+
 </style>

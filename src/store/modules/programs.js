@@ -22,6 +22,7 @@ export default {
         programTrainMods: [],
         programTrainsToday: [],
         programTrains: [],
+        programDiary: [],
     },
 
     actions: {
@@ -33,27 +34,47 @@ export default {
                 // задать дни
                 for (let d = 0; d < 7; d++) {
                     let date = new Date(ctx.state.program.date_start);
-                    console.log('1 day prog',date);
                     date.setDate(date.getDate() + w * 7 + d);
                     days[`${d + 1}`] = {
                         id: d + 1,
                         date: date,
                         weekDay: date.getDay(),
                         diet: {},
-                        trains: {}
+                        trains: {},
+                        diary: {}
                     }
 
                     let month = date.getMonth() + 1;
                     let date_input = `${date.getDate() < 10 ? '0' + date.getDate() : date.getDate()}.${month < 10 ? '0' + month : month}.${date.getFullYear()}`;
-                    let input = {
+                    
+                    let input_diet = {
                         idProgram: ctx.state.program.id,
                         date: date_input,
                     }
-                    await ctx.dispatch('showProgramDiet', input).then(() => {
-                        
+                    await ctx.dispatch('showProgramDiet', input_diet).then(() => {
                         days[`${d + 1}`].diet = ctx.state.diet;
                         days[`${d + 1}`].eaten = ctx.state.eaten;
                     });
+
+                    let input_train = {
+                        id: ctx.state.program.id,
+                        date: date_input,
+                    }
+                    await ctx.dispatch('showTrainProgram', input_train).then(() => {
+                        days[`${d + 1}`].trains = ctx.state.programTrainsToday;
+                    });
+                    
+                    date_input = date.getFullYear() + '-' +
+                    ('00' + (date.getMonth()+1)).slice(-2) + '-' +
+                    ('00' + date.getDate()).slice(-2);
+                    let input_diary = {
+                        idUser: JSON.parse(localStorage.getItem("user")).id,
+                        date: date_input,
+                    }
+                    await ctx.dispatch('showDiary', input_diary).then(() => {
+                        days[`${d + 1}`].diary = ctx.state.programDiary;
+                    });
+                    
 
                 }
                 weeks[`${w + 1}`] = {
@@ -83,7 +104,6 @@ export default {
                 diet.carbohydrates = 0;
                 diet.calories = 0;
                 diet.fibers = 0;
-                console.log(' diet proteins ', diet.proteins);
                 for (let i = 0; i < diet.length; i++) {
                     // на каждый прием пищи получить продукты
                     await axios.get(`${url}/api/programs/get-meal-foods/${diet[i].id}`).then((res) => {
@@ -157,7 +177,6 @@ export default {
                 schedule[date.week].days[date.day].diet = ctx.state.diet;
                 schedule[date.week].days[date.day].eaten = ctx.state.eaten;
                 localStorage.setItem('schedule', JSON.stringify(schedule));
-                console.log('new diet in schedule ', JSON.parse(localStorage.getItem('schedule'))[date.week].days[date.day].diet);
             }); 
         },
 
@@ -209,6 +228,8 @@ export default {
             });
         },
 
+
+
         async setCurrentWeek(ctx, week) {
             ctx.commit("updateCurrentWeek", week);
         },
@@ -248,10 +269,8 @@ export default {
         },
 
         async showProgram(ctx, user) {
-            console.log('iddddd', user);
             await axios.post(`${url}/api/programs/get-program`, user).then((res) => {
                 if (res.data.name === "Success") {
-                    console.log(JSON.stringify(res.data))
                     ctx.commit("updateProgramData", res.data.program);
                 }
             });
@@ -294,7 +313,6 @@ export default {
         async showTrains(ctx, program) {
             await axios.post(`${url}/api/programs/get-trains`, program).then((res) => {
                 if (res.data.name === "Success") {
-                    console.log('get-trains', JSON.stringify(res.data));
                     let trains = Array.from(res.data.trains);
                     for (let i = 0; i < trains.length; i++) {
                         trains[i].description = trains[i].description.split("\n");
@@ -322,8 +340,34 @@ export default {
                     ctx.commit("updateTrainProgram", trains);
                 }
             })
+        },
+
+        async showDiary(ctx, parameters) {
+            await axios.post(`${url}/api/programs/get-diary-by-date`, parameters).then((res) => {
+                if (res.data.name === "Success") {
+                console.log(JSON.stringify(res.data.params));
+                let results = {};
+                    if (res.data.params) {
+                    results.weight = res.data.params.weight;
+                    results.bust = res.data.params.bust ? res.data.params.bust : "";
+                    results.hip = res.data.params.hip ? res.data.params.hip : "";
+                    results.waist = res.data.params.waist ? res.data.params.waist : "";
+                    results.bicep = res.data.params.bicep ? res.data.params.bicep : "";
+                    results.shin = res.data.params.shin ? res.data.params.shin : "";
+                    results.neck = res.data.params.neck ? res.data.params.neck : "";
+                    } else {                        
+                    results.weight = "";
+                    results.bust = "";
+                    results.hip =  "";
+                    results.waist =  "";
+                    results.bicep =  "";
+                    results.shin =  "";
+                    results.neck =  "";
+                    }
+                    ctx.commit("updateDiary", results);
+                }
+            });
         }
-      
     },
 
     mutations: {
@@ -373,7 +417,6 @@ export default {
             state.diet = diet;
         },
         updateEaten(state, eaten) {
-            console.log('eaten', JSON.stringify(eaten));
             state.eaten = eaten;
         },
 
@@ -402,7 +445,6 @@ export default {
         },
 
         updateRations(state, rations) {
-            console.log('rations updated! ', JSON.stringify(rations));
             localStorage.setItem('rations', JSON.stringify(rations))
             state.programRations = rations;
         },
@@ -417,6 +459,9 @@ export default {
 
         updateTrains(state, trains) {
             state.programTrains = trains;
+        },
+        updateDiary(state, diary) {
+            state.programDiary = diary;
         },
     },
 
@@ -487,6 +532,10 @@ export default {
 
         trains(state) {
             return state.programTrains;
+        },
+
+        diary(state) {
+            return state.programDiary;
         },
     }
 }

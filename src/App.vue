@@ -18,12 +18,10 @@ export default {
 
     async updateLocalUser() {
       await this.checkAccess().then( () => {
+        console.log(JSON.stringify( this.getUser));
         if (this.getUser) {
           localStorage.setItem("user", JSON.stringify(this.getUser));
           this.updateUserProgram();
-        } else {
-          alert("Ошибка авторизации", this.getMessage);
-          this.$router.push({name: "start"})
         }
       }) 
     },
@@ -42,7 +40,7 @@ export default {
     },
   },
 
-  created() {
+  mounted() {
     if (localStorage.getItem("user-auth")) {
       if (navigator.connection.type != "none") {
         this.updateLocalUser();

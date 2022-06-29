@@ -29,10 +29,35 @@
                             <div>
                                 {{ item.cost }} руб.
                             </div>
+                            <!--<form method="POST" action="https://yoomoney.ru/quickpay/confirm.xml">
+                                <input type="hidden" name="receiver" value="4100117862329785"/>
+                                <input type="hidden" name="formcomment"
+                                        :value="`Оплата премиум-статуса на ${item.days} дней`"/>
+                                <input type="hidden" name="short-dest"
+                                        :value="`Оплата премиум-статуса на ${item.days} дней`"/>
+                                <input type="hidden" name="label"
+                                        :value="
+                                            JSON.stringify(
+                                            {
+                                                    idUser: user.id,
+                                                    days: item.days,
+                                                    cost: item.cost,
+                                                }
+                                            )
+                                        "/>
+                                <input type="hidden" name="quickpay-form" value="shop"/>
+                                <input type="hidden" name="targets" :value="`Оплата премиум-статуса на ${item.days} дней`"/>
+                                <input type="hidden" name="sum" :value="item.cost" data-type="number"/>
+                                <input type="hidden" name="paymentType" value="AC"/>
+                                <input type="hidden" name="successURL"
+                                        value="https://www.dosports.ru/profile/premium"/>
+                                <input class="button submit" type="submit" value="Купить"/>
+                            </form>-->
                             <div
                                 @click="getPayLink(index, item.days, item.cost)"
                                 style="background:#004BD7; border-radius: 5px; font-size: 16pt;"
-                                class="px-3 py-1 my-4">+</div>
+                                class="px-3 py-1 my-4"
+                            >+</div>
                         </div>
                     </div>
                 </div>
@@ -87,7 +112,6 @@ export default {
                 return "";
             }
             return "";
-            
         }
     },
 

@@ -112,32 +112,6 @@ export default {
         ],
     }),
     methods: {
-        allDiary() {
-            let schedule = JSON.parse(localStorage.getItem('schedule'));
-            for (let i = 1; i <= 3; i++) {
-                for (let j = 1; j <= 7; j++) {
-                    if (schedule[i].days[j].diary.weight !== '') {
-                        let diaryItem = schedule[i].days[j].diary;
-                        diaryItem.date = schedule[i].days[j].date;
-                        this.diary.push(diaryItem);
-                    }
-                    
-                }
-            }
-            console.log('LOCAL', JSON.stringify(this.diary))
-            //this.dailyMeals = schedule[this.currentDate.week].days[this.currentDate.day];
-        },
-        async getDiary() {
-            if (navigator.connection.type != "none") {
-                let user = JSON.parse(localStorage.getItem("user"));
-                await axios.post(`${url}/api/programs/get-user-diary`, user).then((res) => {
-                    if (res.data.name === "Success") {
-                        //this.diary = res.data.diary;
-                        console.log('SERVER', JSON.stringify(res.data.diary))
-                    }
-                })
-            }
-        },
         formatDate(date) {
             if (date) {
                 let d = new Date(date);
@@ -262,8 +236,7 @@ export default {
         },
     },
     mounted() {
-        this.getDiary();
-        this.allDiary();
+        this.diary = JSON.parse(localStorage.getItem('diary'));
     }
 
 }

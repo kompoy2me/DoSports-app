@@ -23,6 +23,7 @@ export default {
         programTrainsToday: [],
         programTrains: [],
         programDiary: [],
+        programAllDiary: [],
     },
 
     actions: {
@@ -41,7 +42,6 @@ export default {
                         weekDay: date.getDay(),
                         diet: {},
                         trains: {},
-                        diary: {}
                     }
 
                     let month = date.getMonth() + 1;
@@ -64,7 +64,7 @@ export default {
                         days[`${d + 1}`].trains = ctx.state.programTrainsToday;
                     });
                     
-                    date_input = date.getFullYear() + '-' +
+                    /*date_input = date.getFullYear() + '-' +
                     ('00' + (date.getMonth()+1)).slice(-2) + '-' +
                     ('00' + date.getDate()).slice(-2);
                     let input_diary = {
@@ -73,16 +73,18 @@ export default {
                     }
                     await ctx.dispatch('showDiary', input_diary).then(() => {
                         days[`${d + 1}`].diary = ctx.state.programDiary;
-                    });
-                    
-
+                    });*/
                 }
                 weeks[`${w + 1}`] = {
                     id: w + 1,
                     days: days
                 }
             }
+            await ctx.dispatch('showAllDiary');
             ctx.commit("updateSchedule", weeks);
+            //скачать дневник
+            
+            
         },
 
         /*eslint-disable*/
@@ -97,7 +99,7 @@ export default {
              // получить все приемы пищи на день
              await axios.post(`${url}/api/programs/get-program-diet`, input).then(async (res) => {
                 let diet = Array.from(res.data);
-                console.log('got diet ', JSON.stringify(res.data));
+                //console.log('got diet ', JSON.stringify(res.data));
                 // свойства на весь день
                 diet.proteins = 0;
                 diet.fats = 0;
@@ -345,7 +347,6 @@ export default {
         async showDiary(ctx, parameters) {
             await axios.post(`${url}/api/programs/get-diary-by-date`, parameters).then((res) => {
                 if (res.data.name === "Success") {
-                console.log(JSON.stringify(res.data.params));
                 let results = {};
                     if (res.data.params) {
                     results.weight = res.data.params.weight;
@@ -367,6 +368,17 @@ export default {
                     ctx.commit("updateDiary", results);
                 }
             });
+        },
+
+        async showAllDiary(ctx) {
+            console.log('ALL DIARY')
+            let user = JSON.parse(localStorage.getItem("user"));
+            await axios.post(`${url}/api/programs/get-user-diary`, user).then((res) => {
+                if (res.data.name === "Success") {
+                    
+                    ctx.commit("updateAllDiary", res.data.diary);
+                }
+            })
         }
     },
 
@@ -412,7 +424,7 @@ export default {
         },
         
         updateProgramDiet(state, diet) {
-            console.log('created diet ', JSON.stringify(diet));
+            //console.log('created diet ', JSON.stringify(diet));
             localStorage.setItem("diet", JSON.stringify(diet));
             state.diet = diet;
         },
@@ -462,6 +474,11 @@ export default {
         },
         updateDiary(state, diary) {
             state.programDiary = diary;
+        },
+        updateAllDiary(state, diary) {
+            localStorage.setItem('diary', JSON.stringify(diary))
+            console.log('diary', JSON.stringify(diary))
+            state.programAllDiary = diary;
         },
     },
 

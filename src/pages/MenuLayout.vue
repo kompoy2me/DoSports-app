@@ -133,15 +133,6 @@
                     <v-icon class="mr-6" color="#51516C">mdi-bowl-mix-outline</v-icon>
                 <v-list-item-title>Мои рационы</v-list-item-title>
             </v-list-item>
-
-
-            <!--<v-list-item
-              class="my-3"
-              @click="$router.push({ name: 'atlas'}).catch(err => {})"
-            >
-                    <v-icon class="mr-6">mdi-home</v-icon>
-                <v-list-item-title>Атлас тела</v-list-item-title>
-            </v-list-item>-->
             
           </v-list-item-group>
         </v-list>
@@ -165,6 +156,7 @@ export default {
   },
   computed: {
     ...mapGetters(["getUser"]),
+
   },
   created() {
     this.user = JSON.parse(localStorage.getItem("user"))

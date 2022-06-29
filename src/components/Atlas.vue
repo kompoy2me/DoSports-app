@@ -185,73 +185,89 @@ export default {
   }),
   methods: {
     ...mapActions(["showDiary"]),
-      async setCurrData(day, week) {
-        this.currentDate.day = day + 1;
-        this.currentDate.week = week + 1;
-        this.getDiary();
-      },
+    async setCurrData(day, week) {
+      this.currentDate.day = day + 1;
+      this.currentDate.week = week + 1;
+      this.findDiary();
+      this.getDiary();
+    },
 
-      async addToDiary() {
-        if (this.$refs.form.validate()) {
-          if (navigator.connection.type != "none") {
-            this.pageStatus = 'load';
-            this.parameters.idUser = JSON.parse(localStorage.getItem("user")).id;
-            this.parameters.date = this.date();
-            console.log(JSON.stringify(this.parameters))
-            await axios.post(`${url}/api/programs/add-diary`, this.parameters).then((res) => {
-                if (res.data.name === "Success") {
-                  this.getDiary();
-                }
-            });
-            this.overlay = true;
-          }
-        }
-      },
-
-      updateDiary() {
-        let schedule = JSON.parse(localStorage.getItem('schedule'));
-        this.parameters = schedule[this.currentDate.week].days[this.currentDate.day].diary;
-        this.pageStatus = 'diary';
-      },
-
-      async getDiary() {
+    async addToDiary() {
+      if (this.$refs.form.validate()) {
         if (navigator.connection.type != "none") {
           this.pageStatus = 'load';
-          let parameters = {
-              idUser: JSON.parse(localStorage.getItem("user")).id,
-              date: this.date()
-          }
-          await this.showDiary(parameters).then(() => {
-            let schedule = JSON.parse(localStorage.getItem('schedule'));
-            schedule[this.currentDate.week].days[this.currentDate.day].diary = this.diary;
-            localStorage.setItem('schedule', JSON.stringify(schedule));
-          })
-        } 
-        this.updateDiary();
-      },
-
-      getScheduleDay() {
-        let week = this.currentDate.week;
-        let day = this.currentDate.day;
-        let schedule = JSON.parse(localStorage.getItem('schedule'));
-        if (schedule[week]) {
-            return schedule[week].days[day].date;
+          this.parameters.idUser = JSON.parse(localStorage.getItem("user")).id;
+          let d = this.getScheduleDay();
+          this.parameters.date = this.date(d);
+          console.log(JSON.stringify(this.parameters))
+          await axios.post(`${url}/api/programs/add-diary`, this.parameters).then((res) => {
+              if (res.data.name === "Success") {
+                this.getDiary();
+              }
+          });
+          this.overlay = true;
         }
-        return "";
-      },
+      }
+    },
 
-      date() {
-        let date = new Date(this.getScheduleDay());
-        date = date.getFullYear() + '-' +
-        ('00' + (date.getMonth()+1)).slice(-2) + '-' +
-        ('00' + date.getDate()).slice(-2);
-        return date;
-      },
+    updateDiary() {
+      //let schedule = JSON.parse(localStorage.getItem('schedule'));
+      //this.parameters = schedule[this.currentDate.week].days[this.currentDate.day].diary;
+      console.log(localStorage.getItem('diary'));
+      this.pageStatus = 'diary';
+    },
+
+    findDiary() {
+      let currD = this.getScheduleDay();
+      let searchD = this.date(currD);
+      let diary = JSON.parse(localStorage.getItem('diary'));
+      //console.log('currDate = ', searchD, '1 date =', this.date(diary[11].date));
+      let foundD = diary.find( diary_item => this.date(diary_item.date) === searchD )
+
+      this.parameters = foundD;
+    },
+
+    async getDiary() {
+      if (navigator.connection.type != "none") {
+        this.pageStatus = 'load';
+        let d = this.getScheduleDay();
+        let parameters = {
+            idUser: JSON.parse(localStorage.getItem("user")).id,
+            date: this.date(d)
+        }
+        await this.showDiary(parameters).then(() => {
+          /*let schedule = JSON.parse(localStorage.getItem('schedule'));
+          schedule[this.currentDate.week].days[this.currentDate.day].diary = this.diary;
+          localStorage.setItem('schedule', JSON.stringify(schedule));*/
+        })
+      } 
+      this.updateDiary();
+    },
+
+    getScheduleDay() {
+      let week = this.currentDate.week;
+      let day = this.currentDate.day;
+      let schedule = JSON.parse(localStorage.getItem('schedule'));
+      if (schedule[week]) {
+          return schedule[week].days[day].date;
+      }
+      return "";
+    },
+
+    date(d) {
+      let date = new Date(d);
+      date = date.getFullYear() + '-' +
+      ('00' + (date.getMonth()+1)).slice(-2) + '-' +
+      ('00' + date.getDate()).slice(-2);
+      return date;
+    },
+    
   },
   computed: {
     ...mapGetters(['diary'])
   },
   mounted() {
+    
   }
 }
 </script>

@@ -125,7 +125,6 @@ export default {
                     this.msg = {title: 'Ошибка входа', text: this.getMessage},
                     this.logProgress = false;
                     this.dialog = true;
-                    //alert(this.getMessage);
                 }
             })
         },

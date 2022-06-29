@@ -59,14 +59,7 @@ export default{
         async unauthorized(ctx) {
             ctx.commit("setUnauthorized");
         },
-        async updateLocalUser(ctx) {
-            ctx.dispatch("checkAccess").then(() => {
-                if (ctx.getters["getUser"]) {
-                    ctx.commit("updateUserInStore")
-                }
-            })
-            
-        }
+
     },
     mutations: {
         authSuccess(state, token) {
@@ -82,10 +75,22 @@ export default{
         updateMessage(state, message) {
             state.msgAuth = message;
         },
+
+        checkPremium(state) {
+            if (state.user.pro_last_datetime) {
+                let premium_date = new Date(state.user.pro_last_datetime);
+                let curr_date = new Date();
+                if (curr_date>premium_date) {
+                    state.user.pro_last_datetime = null;
+                }
+            }
+        },
+
         updateUser(state, user) {
-            localStorage.setItem("user", JSON.stringify(user));
             state.user = user;
-            console.log("user updated", state.user);
+            this.commit("checkPremium");
+            localStorage.setItem("user", JSON.stringify(state.user));
+            console.log("user updated", JSON.stringify(state.user));
         },
         setUnauthorized(state) {
             state.user = null;
@@ -98,6 +103,7 @@ export default{
             localStorage.removeItem("diet");
             localStorage.removeItem("personal-foods");            
             localStorage.removeItem("rations");
+            localStorage.removeItem("diary");
             state.tokenAccess = "";
             state.tokenRefresh = "";
         },
@@ -113,12 +119,11 @@ export default{
             localStorage.removeItem("diet");
             localStorage.removeItem("personal-foods");
             localStorage.removeItem("rations");
+            localStorage.removeItem("diary");
             state.tokenAccess = "";
             state.tokenRefresh = "";
         },
-        updateUserInStore(state) {
-            localStorage.setItem("user", JSON.stringify(state.user));
-        }
+
 
     },
     getters: {

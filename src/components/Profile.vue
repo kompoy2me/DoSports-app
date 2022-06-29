@@ -52,9 +52,6 @@
                 </div>
 
                 </div>
-                
-                
-                
             </div>
         </div>
         <v-overlay
@@ -137,6 +134,7 @@ export default {
 
         initializeUser() {
             this.user = JSON.parse(localStorage.getItem("user"));
+            console.log('profile user.pro_last_datetime', localStorage.getItem("user"));
             this.program = JSON.parse(localStorage.getItem("program"));
         },
 
